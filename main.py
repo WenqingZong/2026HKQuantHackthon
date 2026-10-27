@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 
 from hkq import pipeline
 from hkq.config import DEFAULT_CONFIG, Config
@@ -19,6 +20,12 @@ from hkq.config import DEFAULT_CONFIG, Config
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="ETF 日频因子 + 机器学习流水线")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="配置文件路径")
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="日志级别",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("download", help="从 Databento 下载日频 OHLCV")
     subparsers.add_parser("features", help="计算 Alpha101 因子并生成数据集")
@@ -28,6 +35,11 @@ def main(argv: list[str] | None = None) -> None:
     subparsers.add_parser("all", help="依次执行 download -> features -> train")
 
     args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=args.log_level,
+        format="%(asctime)s %(levelname)-7s %(message)s",
+        datefmt="%H:%M:%S",
+    )
     cfg = Config.load(args.config)
 
     if args.command == "download":

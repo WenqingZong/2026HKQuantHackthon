@@ -1,4 +1,4 @@
-"""评估：逐日 IC、按日分组统计、top-k 等权组合回测。"""
+"""评估：逐日 IC、按日分组统计、top-k 等权组合回测、成本敏感度。"""
 
 from __future__ import annotations
 
@@ -6,6 +6,11 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+
+from hkq.dataset import LABEL
+
+TRADING_DAYS_PER_YEAR = 252.0
+COST_LEVELS_BPS = (0, 5, 10, 20, 30)
 
 
 def daily_rank_ic(prediction: pd.Series, label: pd.Series) -> pd.Series:
@@ -17,7 +22,7 @@ def daily_rank_ic(prediction: pd.Series, label: pd.Series) -> pd.Series:
     return ic.dropna()
 
 
-def ic_summary(ic: pd.Series) -> dict:
+def ic_summary(ic: pd.Series) -> dict[str, float]:
     """把逐日 IC 序列压成几个常用指标。"""
     ic = ic.dropna()
     n_days = len(ic)
@@ -44,7 +49,28 @@ def ic_summary(ic: pd.Series) -> dict:
     }
 
 
-def performance(returns: pd.Series, periods_per_year: float) -> dict:
+def alpha_ic_table(data: pd.DataFrame, features: list[str]) -> pd.DataFrame:
+    """逐因子计算 Rank IC 统计，作为后续因子筛选的基线。"""
+    rows = {name: ic_summary(daily_rank_ic(data[name], data[LABEL])) for name in features}
+    table = pd.DataFrame(rows).T
+    table["n_days"] = table["n_days"].astype(int)
+    table.index.name = "factor"
+    return table.sort_values("ic_mean", ascending=False)
+
+
+def periods_per_year(rebalance_days: int) -> float:
+    return TRADING_DAYS_PER_YEAR / rebalance_days
+
+
+def net_of_cost(gross: pd.Series, turnover: pd.Series, cost_bps: float) -> pd.Series:
+    """按每期换手计提成本：net = gross − turnover × cost_bps / 1e4。
+
+    回测和成本敏感度都走这一个函数，改成本口径只改这里。
+    """
+    return gross - turnover * cost_bps / 1e4
+
+
+def performance(returns: pd.Series, periods_per_year: float) -> dict[str, float]:
     """由每个调仓期的收益率算出年化绩效。"""
     if returns.empty:
         return {
@@ -75,8 +101,8 @@ class BacktestResult:
 
     period: pd.DataFrame
     holdings: pd.DataFrame
-    strategy: dict
-    benchmark: dict
+    strategy: dict[str, float]
+    benchmark: dict[str, float]
 
 
 def backtest_topk(
@@ -103,7 +129,8 @@ def backtest_topk(
     positions = [*symbols, "CASH"]
     previous_weights = pd.Series(0.0, index=positions)
     previous_weights["CASH"] = 1.0  # 回测起点是空仓
-    records, holdings = [], {}
+    records: list[dict[str, object]] = []
+    holdings: dict[pd.Timestamp, list[str]] = {}
 
     for date in rebalance_dates:
         scores = predictions.loc[date].dropna()
@@ -133,14 +160,33 @@ def backtest_topk(
     if period.empty:
         period = pd.DataFrame(columns=["gross_return", "benchmark_return", "turnover"])
     else:
-        period["net_return"] = period["gross_return"] - period["turnover"] * cost_bps / 1e4
+        period["net_return"] = net_of_cost(period["gross_return"], period["turnover"], cost_bps)
 
-    periods_per_year = 252.0 / rebalance_days
+    per_year = periods_per_year(rebalance_days)
     net = period.get("net_return", pd.Series(dtype=float))
     benchmark = period.get("benchmark_return", pd.Series(dtype=float))
     return BacktestResult(
         period=period,
         holdings=pd.DataFrame(holdings).T,
-        strategy=performance(net, periods_per_year),
-        benchmark=performance(benchmark, periods_per_year),
+        strategy=performance(net, per_year),
+        benchmark=performance(benchmark, per_year),
+    )
+
+
+def cost_sensitivity(
+    period: pd.DataFrame, rebalance_days: int, levels_bps: tuple[float, ...] = COST_LEVELS_BPS
+) -> pd.Series:
+    """不同成本假设下的年化收益，用来看策略吃不吃交易成本。
+
+    回测已经把每期的毛收益和换手存下来了，这里只是换个数重算一遍，不用重新训练。
+    """
+    per_year = periods_per_year(rebalance_days)
+    return pd.Series(
+        {
+            bps: performance(
+                net_of_cost(period["gross_return"], period["turnover"], bps), per_year
+            )["cagr"]
+            for bps in levels_bps
+        },
+        name="cagr",
     )

@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -69,7 +70,7 @@ def _daily_return(close: pd.DataFrame) -> pd.DataFrame:
 
 def _log_volume(volume: pd.DataFrame) -> pd.DataFrame:
     """成交量为 0 的停牌/无成交日按缺失处理，避免 log(0) 得到 -inf。"""
-    return np.log(volume.where(volume > 0))
+    return cast(pd.DataFrame, np.log(volume.where(volume > 0)))
 
 
 # --- 因子 -------------------------------------------------------------------
@@ -133,7 +134,7 @@ def alpha009(panel: Panel) -> pd.DataFrame:
 
 def alpha012(panel: Panel) -> pd.DataFrame:
     """sign(delta(volume, 1)) * (-1 * delta(close, 1))"""
-    return np.sign(_delta(panel.volume, 1)) * (-_delta(panel.close, 1))
+    return cast(pd.DataFrame, np.sign(_delta(panel.volume, 1)) * (-_delta(panel.close, 1)))
 
 
 def alpha023(panel: Panel) -> pd.DataFrame:

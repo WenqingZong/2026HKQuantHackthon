@@ -11,9 +11,10 @@ X / y 都是 numpy 数组；X_valid 为空时关闭早停。
 from __future__ import annotations
 
 import copy
+import logging
 import math
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Any, Protocol
 
 import numpy as np
 import pandas as pd
@@ -21,6 +22,8 @@ import torch
 from lightgbm import LGBMRegressor, early_stopping
 from torch import nn
 from xgboost import XGBRegressor
+
+logger = logging.getLogger(__name__)
 
 
 class Regressor(Protocol):
@@ -41,13 +44,19 @@ class Regressor(Protocol):
 class XGBoostModel:
     """XGBoost 回归器：把未来收益当连续值回归，按预测值排序选股。"""
 
-    params: dict = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
     early_stopping_rounds: int = 50
     seed: int = 42
     feature_importance_: pd.Series | None = field(default=None, init=False, repr=False)
     _model: XGBRegressor | None = field(default=None, init=False, repr=False)
 
-    def fit(self, X, y, X_valid=None, y_valid=None):
+    def fit(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        X_valid: np.ndarray | None = None,
+        y_valid: np.ndarray | None = None,
+    ) -> None:
         params = {
             "objective": "reg:squarederror",
             "random_state": self.seed,
@@ -62,7 +71,9 @@ class XGBoostModel:
         self._model.fit(X, y, eval_set=eval_set, verbose=False)
         self.feature_importance_ = pd.Series(self._model.feature_importances_, name="importance")
 
-    def predict(self, X) -> np.ndarray:
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        if self._model is None:
+            raise RuntimeError("模型还没有 fit")
         return np.asarray(self._model.predict(X))
 
 
@@ -70,13 +81,19 @@ class XGBoostModel:
 class LightGBMModel:
     """LightGBM 回归器，参数风格与 XGBoost 保持一致。"""
 
-    params: dict = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
     early_stopping_rounds: int = 50
     seed: int = 42
     feature_importance_: pd.Series | None = field(default=None, init=False, repr=False)
     _model: LGBMRegressor | None = field(default=None, init=False, repr=False)
 
-    def fit(self, X, y, X_valid=None, y_valid=None):
+    def fit(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        X_valid: np.ndarray | None = None,
+        y_valid: np.ndarray | None = None,
+    ) -> None:
         self._model = LGBMRegressor(
             objective="regression",
             random_state=self.seed,
@@ -84,7 +101,7 @@ class LightGBMModel:
             verbose=-1,
             **self.params,
         )
-        if X_valid is None:
+        if X_valid is None or y_valid is None:
             self._model.fit(X, y)
         else:
             self._model.fit(
@@ -96,7 +113,9 @@ class LightGBMModel:
             )
         self.feature_importance_ = pd.Series(self._model.feature_importances_, name="importance")
 
-    def predict(self, X) -> np.ndarray:
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        if self._model is None:
+            raise RuntimeError("模型还没有 fit")
         return np.asarray(self._model.predict(X))
 
 
@@ -129,7 +148,13 @@ class MLPModel:
         layers.append(nn.Linear(width, 1))
         return nn.Sequential(*layers)
 
-    def fit(self, X, y, X_valid=None, y_valid=None):
+    def fit(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        X_valid: np.ndarray | None = None,
+        y_valid: np.ndarray | None = None,
+    ) -> None:
         torch.manual_seed(self.seed)
         device = self._resolve_device()
 
@@ -170,13 +195,17 @@ class MLPModel:
             else:
                 bad_epochs += 1
                 if bad_epochs >= self.patience:
-                    print(f"  MLP early stop at epoch {epoch + 1} (valid MSE {best_loss:.6f})")
+                    logger.info(
+                        f"  MLP early stop at epoch {epoch + 1} (valid MSE {best_loss:.6f})"
+                    )
                     break
 
         if best_state is not None:
             self._net.load_state_dict(best_state)
 
-    def predict(self, X) -> np.ndarray:
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        if self._net is None:
+            raise RuntimeError("模型还没有 fit")
         device = next(self._net.parameters()).device
         self._net.eval()
         with torch.no_grad():
@@ -186,7 +215,7 @@ class MLPModel:
 
 def build_model(
     name: str,
-    params: dict,
+    params: dict[str, Any],
     *,
     seed: int,
     early_stopping_rounds: int = 50,

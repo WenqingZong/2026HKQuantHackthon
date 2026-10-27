@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -22,38 +24,38 @@ def make_panel(n_days: int = 40, seed: int = 0) -> Panel:
         columns=symbols,
     )
     open_ = close + rng.normal(0, 0.5, close.shape)
-    high = np.maximum(open_, close) + 0.5
-    low = np.minimum(open_, close) - 0.5
+    high = open_.where(open_ > close, close) + 0.5
+    low = open_.where(open_ < close, close) - 0.5
     volume = pd.DataFrame(
         rng.integers(1_000, 10_000, close.shape).astype(float), index=dates, columns=symbols
     )
     return Panel(open=open_, high=high, low=low, close=close, volume=volume)
 
 
-def test_alpha101_matches_formula():
+def test_alpha101_matches_formula() -> None:
     panel = make_panel()
     expected = (panel.close - panel.open) / (panel.high - panel.low + 0.001)
     pd.testing.assert_frame_equal(alpha101(panel), expected)
 
 
-def test_alpha012_follows_volume_direction():
+def test_alpha012_follows_volume_direction() -> None:
     panel = make_panel()
-    expected = np.sign(panel.volume.diff()) * (-panel.close.diff())
+    expected = cast(pd.DataFrame, np.sign(panel.volume.diff()) * (-panel.close.diff()))
     pd.testing.assert_frame_equal(alpha012(panel), expected)
 
 
-def test_alpha033_is_cross_sectional_rank():
+def test_alpha033_is_cross_sectional_rank() -> None:
     panel = make_panel()
     expected = (panel.open / panel.close - 1.0).rank(axis=1, pct=True)
     pd.testing.assert_frame_equal(alpha033(panel), expected)
 
 
-def test_compute_alphas_rejects_unknown_factor():
+def test_compute_alphas_rejects_unknown_factor() -> None:
     with pytest.raises(KeyError):
         compute_alphas(make_panel(), ["alpha999"])
 
 
-def test_forward_return_respects_lag():
+def test_forward_return_respects_lag() -> None:
     dates = pd.bdate_range("2024-01-01", periods=4)
     close = pd.DataFrame({"AAA": [1.0, 2.0, 4.0, 8.0]}, index=dates)
     result = forward_return(close, horizon=1, lag=1)
@@ -62,7 +64,7 @@ def test_forward_return_respects_lag():
     assert np.isnan(result["AAA"].iloc[-1])
 
 
-def test_build_dataset_is_nan_free():
+def test_build_dataset_is_nan_free() -> None:
     data = build_dataset(make_panel(), alphas=["alpha101", "alpha012"], horizon=2, min_history=5)
 
     assert data.index.names == ["date", "symbol"]
@@ -70,7 +72,7 @@ def test_build_dataset_is_nan_free():
     assert data[LABEL].notna().all()
 
 
-def test_split_by_date_stays_inside_windows():
+def test_split_by_date_stays_inside_windows() -> None:
     data = build_dataset(make_panel(), alphas=["alpha101"], horizon=2, min_history=5)
     dates = sorted(data.index.get_level_values("date").unique())
     start, middle, end = (str(dates[i].date()) for i in (0, 20, -1))

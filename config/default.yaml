@@ -1,0 +1,87 @@
+# 2026 HK Quant Hackathon —— 流水线配置
+# 所有相对路径都以仓库根目录为基准。
+
+universe:
+  # 训练池：覆盖各投资方向、历史较长的 ETF
+  training_tickers: selected_etfs/training_tickers.csv
+  # 交易池：按流动性/规模/成本筛出、每个方向只留一只的 ETF
+  trading_tickers: selected_etfs/trading_tickers.csv
+
+data:
+  # EQUS.SUMMARY 是合并全市场成交后的官方日线汇总（每个代码每天一条记录），
+  # 覆盖 2024-07-01 起。若需要更长的历史，可换成 EQUS.MINI / DBEQ.BASIC，
+  # 代价是成交量只包含部分交易场所（见 README「数据选型」）。
+  dataset: EQUS.SUMMARY
+  schema: ohlcv-1d
+  start: "2024-07-01"
+  end: null # null 表示取数据集可用的最后一个交易日
+  output: data/raw/bars_daily.parquet
+
+dataset:
+  # 选中实现的 Alpha101 因子（只依赖日频 OHLCV 的那一批）
+  alphas:
+    - alpha002
+    - alpha006
+    - alpha008
+    - alpha009
+    - alpha012
+    - alpha014
+    - alpha020
+    - alpha022
+    - alpha023
+    - alpha026
+    - alpha033
+    - alpha034
+    - alpha038
+    - alpha040
+    - alpha044
+    - alpha053
+    - alpha101
+  horizon: 5 # 标签：未来 5 个交易日收益（与调仓周期保持一致）
+  label_lag: 1 # 因子用到当日收盘价，最早下一个交易日才能成交，标签相应后移 1 天
+  label_norm: rank # 标签横截面标准化：rank / zscore / none。rank 等于把回归变成排序，与 top-k 选股一致
+  normalize: rank # rank = 按日做横截面百分位标准化；zscore = 按日均值方差标准化
+  min_history: 20 # 因子预热所需的交易日数，这段数据不参与训练
+  output: data/processed/features.parquet
+
+split:
+  train: ["2024-08-01", "2025-06-30"]
+  valid: ["2025-07-01", "2026-01-31"]
+  test: ["2026-02-01", "2026-10-27"]
+
+train:
+  seed: 42
+  models: [xgboost, lightgbm, mlp]
+  early_stopping_rounds: 50
+  artifacts: artifacts
+
+models:
+  xgboost:
+    n_estimators: 600
+    learning_rate: 0.03
+    max_depth: 4
+    min_child_weight: 20
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 2.0
+  lightgbm:
+    n_estimators: 600
+    learning_rate: 0.03
+    num_leaves: 15
+    min_child_samples: 100
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 2.0
+  mlp:
+    hidden: [128, 64]
+    dropout: 0.2
+    lr: 0.0003
+    weight_decay: 0.0001
+    batch_size: 512
+    max_epochs: 300
+    patience: 30
+
+backtest:
+  top_k: 10 # 每次调仓等权买入预测排名前 k 只
+  rebalance_days: 5 # 每 5 个交易日调仓一次
+  cost_bps: 5 # 单边交易成本（手续费 + 滑点），万分之五；按每期换手计提

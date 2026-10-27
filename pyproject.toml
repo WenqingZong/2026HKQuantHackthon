@@ -26,8 +26,13 @@ torch = { index = "pytorch-cu130" }
 
 [dependency-groups]
 dev = [
+    "mypy>=2.4.0",
+    "pandas-stubs>=3.0.5.260914",
     "pytest>=9.1.1",
+    "ruff>=0.17.3",
+    "types-pyyaml>=6.0.12.20260906",
 ]
+
 [tool.ruff]
 line-length = 100
 target-version = "py314"
@@ -40,3 +45,10 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 [tool.ruff.lint.per-file-ignores]
 # 因子的 docstring 直接照抄论文公式，行超长是为了和原文一一对应
 "hkq/alphas.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.14"
+files = ["hkq", "main.py", "tests"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_unused_ignores = true

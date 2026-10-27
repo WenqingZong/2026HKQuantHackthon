@@ -16,11 +16,12 @@ hkq/
   alphas.py               # Alpha101 因子实现与注册表
   dataset.py              # 因子 + 标签 -> (date, symbol) 长表，时间切分
   models.py               # MLP / XGBoost / LightGBM，统一 fit / predict 接口
-  evaluate.py             # Rank IC、绩效指标、top-k 等权回测
+  evaluate.py             # Rank IC、绩效指标、top-k 等权回测、成本计提与成本敏感度
+  report.py               # 产物落盘：JSON 元数据与 markdown 训练报告
   pipeline.py             # 把上面几步串起来的下载 / 特征 / 训练流程
   config.py               # YAML 配置的解析
-main.py                   # 命令行入口
-tests/test_pipeline.py    # 因子公式、标签对齐、时间切分的校验
+main.py                   # 命令行入口（--log-level 控制日志级别）
+tests/                    # 因子公式、标签对齐、时间切分、成本口径、报告格式、模型接口的校验
 selected_etfs/            # 团队筛出来的训练池与交易池（含字段的完整表）
 example_databento_data/   # 官方给的一份样例数据，可以对照字段
 data/                     # 行情与因子数据集（git 忽略）
@@ -51,8 +52,15 @@ uv run python main.py all        # 上面三步一起跑
 单独跑某个模型、换配置文件：
 
 ```powershell
-uv run python main.py train --models xgboost --config config/default.yaml
+uv run python main.py --config config/default.yaml train --models xgboost
+```
+
+提交前的检查：
+
+```powershell
 uv run python -m pytest tests -q
+uv run ruff check . ; uv run ruff format --check .
+uv run mypy
 ```
 
 ## 数据

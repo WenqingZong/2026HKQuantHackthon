@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -75,7 +76,7 @@ class Config:
     dataset: DatasetConfig
     split: SplitConfig
     train: TrainConfig
-    models: dict[str, dict]
+    models: dict[str, dict[str, Any]]
     backtest: BacktestConfig
 
     @classmethod

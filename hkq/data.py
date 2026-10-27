@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import warnings
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 from zoneinfo import ZoneInfo
 
 import databento as db
@@ -18,6 +20,8 @@ from hkq.config import PROJECT_ROOT
 PRICE_FIELDS = ("open", "high", "low", "close")
 FIELDS = (*PRICE_FIELDS, "volume")
 NEW_YORK = ZoneInfo("America/New_York")
+
+logger = logging.getLogger(__name__)
 
 
 def api_key() -> str:
@@ -57,9 +61,9 @@ def download_bars(
     """从 Databento 下载行情，整理成 (date, symbol) 长表后写入 parquet。"""
     client = db.Historical(api_key())
     if end is None:
-        end = client.metadata.get_dataset_range(dataset=dataset)["end"][:10]
+        end = str(client.metadata.get_dataset_range(dataset=dataset)["end"])[:10]
 
-    print(f"[download] {dataset}/{schema} | {len(symbols)} symbols | {start} -> {end}")
+    logger.info(f"[download] {dataset}/{schema} | {len(symbols)} symbols | {start} -> {end}")
     records = client.timeseries.get_range(
         dataset=dataset,
         schema=schema,
@@ -75,7 +79,7 @@ def download_bars(
     bars = _to_daily_frame(raw, schema=schema)
     degraded = _degraded_days(client, dataset=dataset, start=start, end=end)
     if degraded:
-        print(f"[download] WARNING: {len(degraded)} day(s) with reduced data quality: {degraded}")
+        logger.warning(f"[download] {len(degraded)} day(s) with reduced data quality: {degraded}")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     bars.to_parquet(output, index=False)
@@ -94,7 +98,7 @@ def download_bars(
             "downloaded_at": datetime.now(UTC).isoformat(timespec="seconds"),
         },
     )
-    print(f"[download] wrote {output} ({len(bars):,} rows)")
+    logger.info(f"[download] wrote {output} ({len(bars):,} rows)")
     return bars
 
 
@@ -103,7 +107,7 @@ def _degraded_days(client: db.Historical, *, dataset: str, start: str, end: str)
     conditions = client.metadata.get_dataset_condition(
         dataset=dataset, start_date=start, end_date=end
     )
-    return [item["date"] for item in conditions if item.get("condition") != "available"]
+    return [str(item["date"]) for item in conditions if item.get("condition") != "available"]
 
 
 def _to_daily_frame(raw: pd.DataFrame, *, schema: str) -> pd.DataFrame:
@@ -184,7 +188,7 @@ class Panel:
 
     @property
     def dates(self) -> pd.DatetimeIndex:
-        return self.close.index
+        return cast(pd.DatetimeIndex, self.close.index)
 
     @property
     def symbols(self) -> list[str]:

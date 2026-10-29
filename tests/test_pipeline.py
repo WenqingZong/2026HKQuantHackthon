@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import cast
 
 import numpy as np
@@ -12,47 +13,30 @@ from hkq.alphas import alpha012, alpha033, alpha101, compute_alphas
 from hkq.data import Panel
 from hkq.dataset import LABEL, build_dataset, feature_columns, forward_return, split_by_date
 
-
-def make_panel(n_days: int = 40, seed: int = 0) -> Panel:
-    """构造一个可复现的小面板，字段齐全但数值随机。"""
-    rng = np.random.default_rng(seed)
-    dates = pd.bdate_range("2024-01-01", periods=n_days)
-    symbols = ["AAA", "BBB", "CCC", "DDD"]
-    close = pd.DataFrame(
-        100 + rng.normal(0, 1, (n_days, len(symbols))).cumsum(axis=0),
-        index=dates,
-        columns=symbols,
-    )
-    open_ = close + rng.normal(0, 0.5, close.shape)
-    high = open_.where(open_ > close, close) + 0.5
-    low = open_.where(open_ < close, close) - 0.5
-    volume = pd.DataFrame(
-        rng.integers(1_000, 10_000, close.shape).astype(float), index=dates, columns=symbols
-    )
-    return Panel(open=open_, high=high, low=low, close=close, volume=volume)
+PanelFactory = Callable[..., Panel]
 
 
-def test_alpha101_matches_formula() -> None:
-    panel = make_panel()
+def test_alpha101_matches_formula(panel_factory: PanelFactory) -> None:
+    panel = panel_factory()
     expected = (panel.close - panel.open) / (panel.high - panel.low + 0.001)
     pd.testing.assert_frame_equal(alpha101(panel), expected)
 
 
-def test_alpha012_follows_volume_direction() -> None:
-    panel = make_panel()
+def test_alpha012_follows_volume_direction(panel_factory: PanelFactory) -> None:
+    panel = panel_factory()
     expected = cast(pd.DataFrame, np.sign(panel.volume.diff()) * (-panel.close.diff()))
     pd.testing.assert_frame_equal(alpha012(panel), expected)
 
 
-def test_alpha033_is_cross_sectional_rank() -> None:
-    panel = make_panel()
+def test_alpha033_is_cross_sectional_rank(panel_factory: PanelFactory) -> None:
+    panel = panel_factory()
     expected = (panel.open / panel.close - 1.0).rank(axis=1, pct=True)
     pd.testing.assert_frame_equal(alpha033(panel), expected)
 
 
-def test_compute_alphas_rejects_unknown_factor() -> None:
+def test_compute_alphas_rejects_unknown_factor(panel_factory: PanelFactory) -> None:
     with pytest.raises(KeyError):
-        compute_alphas(make_panel(), ["alpha999"])
+        compute_alphas(panel_factory(), ["alpha999"])
 
 
 def test_forward_return_respects_lag() -> None:
@@ -64,16 +48,16 @@ def test_forward_return_respects_lag() -> None:
     assert np.isnan(result["AAA"].iloc[-1])
 
 
-def test_build_dataset_is_nan_free() -> None:
-    data = build_dataset(make_panel(), alphas=["alpha101", "alpha012"], horizon=2, min_history=5)
+def test_build_dataset_is_nan_free(panel_factory: PanelFactory) -> None:
+    data = build_dataset(panel_factory(), alphas=["alpha101", "alpha012"], horizon=2, min_history=5)
 
     assert data.index.names == ["date", "symbol"]
     assert not data[feature_columns(data)].isna().any().any()
     assert data[LABEL].notna().all()
 
 
-def test_split_by_date_stays_inside_windows() -> None:
-    data = build_dataset(make_panel(), alphas=["alpha101"], horizon=2, min_history=5)
+def test_split_by_date_stays_inside_windows(panel_factory: PanelFactory) -> None:
+    data = build_dataset(panel_factory(), alphas=["alpha101"], horizon=2, min_history=5)
     dates = sorted(data.index.get_level_values("date").unique())
     start, middle, end = (str(dates[i].date()) for i in (0, 20, -1))
 

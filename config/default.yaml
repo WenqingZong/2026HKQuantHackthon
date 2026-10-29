@@ -16,6 +16,8 @@ data:
   start: "2024-07-01"
   end: null # null 表示取数据集可用的最后一个交易日
   output: data/raw/bars_daily.parquet
+  # 分红/拆股记录（yfinance，download 阶段一起拉）。原始价必须复权后再算因子和回测
+  corporate_actions: data/raw/corporate_actions.parquet
 
 dataset:
   # 选中实现的 Alpha101 因子（只依赖日频 OHLCV 的那一批）
@@ -84,4 +86,6 @@ models:
 backtest:
   top_k: 10 # 每次调仓等权买入预测排名前 k 只
   rebalance_days: 5 # 每 5 个交易日调仓一次
-  cost_bps: 5 # 单边交易成本（手续费 + 滑点），万分之五；按每期换手计提
+  # 单边成本：账户佣金约 0.4–0.7bp，加上滑点先按 1.5bp 估。买卖两边分别收，
+  # 所以每期成本 = 总成交名义金额 × cost_bps
+  cost_bps: 1.5

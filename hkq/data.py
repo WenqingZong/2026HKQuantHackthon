@@ -180,12 +180,6 @@ class Panel:
         frames["volume"] = frames["volume"].astype("float64")
         return cls(**frames)
 
-    def field(self, name: str) -> pd.DataFrame:
-        try:
-            return getattr(self, name)
-        except AttributeError as error:
-            raise KeyError(f"未知字段 {name!r}，可选：{FIELDS}") from error
-
     @property
     def dates(self) -> pd.DatetimeIndex:
         return cast(pd.DatetimeIndex, self.close.index)

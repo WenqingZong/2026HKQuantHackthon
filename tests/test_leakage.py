@@ -53,8 +53,12 @@ def test_label_only_uses_the_holding_window() -> None:
     assert actual == expected
 
 
-def test_splits_are_chronological_and_disjoint(panel_factory: PanelFactory) -> None:
-    data = build_dataset(panel_factory(n_days=60), alphas=["alpha101"], horizon=2, min_history=5)
+def test_splits_are_chronological_and_disjoint(
+    panel_factory: PanelFactory, no_actions: pd.DataFrame
+) -> None:
+    data = build_dataset(
+        panel_factory(n_days=60), no_actions, alphas=["alpha101"], horizon=2, min_history=5
+    )
     dates = sorted(data.index.get_level_values("date").unique())
 
     splits = split_by_date(
@@ -75,7 +79,34 @@ def test_splits_are_chronological_and_disjoint(panel_factory: PanelFactory) -> N
     assert not valid_dates & test_dates
 
 
-def test_dataset_features_come_from_the_configured_alphas(panel_factory: PanelFactory) -> None:
-    data = build_dataset(panel_factory(), alphas=["alpha101", "alpha012"], horizon=2, min_history=5)
+def test_dataset_features_come_from_the_configured_alphas(
+    panel_factory: PanelFactory, no_actions: pd.DataFrame
+) -> None:
+    data = build_dataset(
+        panel_factory(), no_actions, alphas=["alpha101", "alpha012"], horizon=2, min_history=5
+    )
 
     assert set(feature_columns(data)) == {"alpha101", "alpha012"}
+
+
+def test_dataset_ignores_corporate_actions_after_the_cut(
+    panel_factory: PanelFactory, no_actions: pd.DataFrame
+) -> None:
+    """在 cut 之后补一次拆股，cut 及之前的特征和标签都不该变。"""
+    panel = panel_factory(n_days=60)
+    cut = 40
+    later_split = pd.DataFrame(
+        {
+            "date": [panel.dates[50]],
+            "symbol": ["AAA"],
+            "dividend": [0.0],
+            "split_ratio": [3.0],
+        }
+    )
+
+    # alpha009 用的是价格差，对复权尺度敏感，正好能测出「未来拆股」有没有渗进来
+    baseline = build_dataset(panel, no_actions, alphas=["alpha009"], horizon=2, min_history=20)
+    with_split = build_dataset(panel, later_split, alphas=["alpha009"], horizon=2, min_history=20)
+
+    cutoff = panel.dates[cut]
+    pd.testing.assert_frame_equal(baseline.loc[:cutoff], with_split.loc[:cutoff])

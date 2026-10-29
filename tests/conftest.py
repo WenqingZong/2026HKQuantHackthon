@@ -39,6 +39,19 @@ def panel_factory() -> PanelFactory:
 
 
 @pytest.fixture
+def no_actions() -> pd.DataFrame:
+    """空的分红/拆股表，给不关心公司行为的用例用。"""
+    return pd.DataFrame(
+        {
+            "date": pd.Series(dtype="datetime64[ns]"),
+            "symbol": pd.Series(dtype="object"),
+            "dividend": pd.Series(dtype="float64"),
+            "split_ratio": pd.Series(dtype="float64"),
+        }
+    )
+
+
+@pytest.fixture
 def wide_factory() -> WideFactory:
     """构造一个随机日收益/预测的宽表（日期 × 代码）。"""
 

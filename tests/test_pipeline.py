@@ -48,16 +48,20 @@ def test_forward_return_respects_lag() -> None:
     assert np.isnan(result["AAA"].iloc[-1])
 
 
-def test_build_dataset_is_nan_free(panel_factory: PanelFactory) -> None:
-    data = build_dataset(panel_factory(), alphas=["alpha101", "alpha012"], horizon=2, min_history=5)
+def test_build_dataset_is_nan_free(panel_factory: PanelFactory, no_actions: pd.DataFrame) -> None:
+    data = build_dataset(
+        panel_factory(), no_actions, alphas=["alpha101", "alpha012"], horizon=2, min_history=5
+    )
 
     assert data.index.names == ["date", "symbol"]
     assert not data[feature_columns(data)].isna().any().any()
     assert data[LABEL].notna().all()
 
 
-def test_split_by_date_stays_inside_windows(panel_factory: PanelFactory) -> None:
-    data = build_dataset(panel_factory(), alphas=["alpha101"], horizon=2, min_history=5)
+def test_split_by_date_stays_inside_windows(
+    panel_factory: PanelFactory, no_actions: pd.DataFrame
+) -> None:
+    data = build_dataset(panel_factory(), no_actions, alphas=["alpha101"], horizon=2, min_history=5)
     dates = sorted(data.index.get_level_values("date").unique())
     start, middle, end = (str(dates[i].date()) for i in (0, 20, -1))
 

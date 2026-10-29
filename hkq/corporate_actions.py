@@ -1,22 +1,33 @@
-"""分红与拆股的复权：把 Databento 的原始价还原成含分红再投资的总收益序列。
+"""分红与拆股的复权。
 
-Databento 给的是未经复权的原始成交价：除息日价格会自然下跌，拆股日价格会按比例缩水。
-不处理的话，标签会把分红当成亏损（高股息 ETF 一次除息就有 1% 上下），拆股更会变成
-一根 -67% 的假 K 线——样本期内 SCHD、SCHP、XLE/XLK/XLB/XLU/XLY、PALL、PPLT、ZCSH、
-ETHA 都拆过股。
+Databento 给的是未经复权的原始成交价：除息日价格会自然下跌，拆股日价格按比例缩水。
+不处理的话，标签会把分红当成亏损，拆股更会变成一根 -67% 的假 K 线——样本期内 SCHD、
+SCHP、XLE/XLK/XLB/XLU/XLY、PALL、PPLT、ZCSH、ETHA 都拆过股。
 
 复权因子 f 的定义是「复权价 = 原始价 × f」，事件日满足::
 
     f_t / f_{t-1} = 拆股比例_t + 每股分红_t / 原始收盘价_t
 
 于是 adj_t / adj_{t-1} - 1 = (close_t × 比例 + 分红) / close_{t-1} - 1，正好是含分红的
-真实收益。因子最后按最新一日归一化，让当前价格保持原始水平（对收益没有影响，只是好读）。
+真实收益。
+
+**这里有个容易踩的坑**：把累积因子再除以最后一天（教科书式的「后复权」）会让 t 日的
+价格水平依赖 t 之后发生的所有分红和拆股——那是未来函数。样本期内 2024-08-01 就有 24 只
+ETF 的「未来缩放」偏离超过 10%，极端如 PPLT（10:1，0.10）、ETHA（1:3 反向，3.00）。
+收益率不受影响（常数在比值里抵消），但用价格差构造的因子会被污染。
+
+所以本模块只提供**因果**因子（只用当日及之前的事件），并且不做事后归一化：
+
+- `adjust_panel` / `cumulative_price_factor`：给收益率、标签用，全程只用过去的事件；
+- `point_in_time_panels`：给因子用，逐日把最近若干天缩放到「以当日为止」的价格单位，
+  和当天的交易所见即所得，不含任何未来信息。
 """
 
 from __future__ import annotations
 
 import logging
 import warnings
+from collections.abc import Iterator
 from pathlib import Path
 
 import pandas as pd
@@ -111,16 +122,17 @@ def load_actions(path: Path) -> pd.DataFrame:
     return actions
 
 
-def adjustment_factors(
-    close: pd.DataFrame, actions: pd.DataFrame, *, include_dividends: bool = True
-) -> pd.DataFrame:
-    """按日期的复权因子，最后一天归一化为 1。"""
+def cumulative_price_factor(close: pd.DataFrame, actions: pd.DataFrame) -> pd.DataFrame:
+    """因果累积复权因子：f_t 只用 t 及之前的事件，不做任何事后归一化。"""
     dividends = _event_matrix(actions, "dividend", close, fill=0.0)
     splits = _event_matrix(actions, "split_ratio", close, fill=1.0)
+    return (splits + dividends / close).fillna(1.0).cumprod()
 
-    step = splits if not include_dividends else splits + dividends / close
-    factor = step.fillna(1.0).cumprod()
-    return factor / factor.iloc[-1]
+
+def cumulative_volume_factor(close: pd.DataFrame, actions: pd.DataFrame) -> pd.DataFrame:
+    """成交量换算成「期初股数」口径：拆股后 300 新股东等价于 100 老股。"""
+    splits = _event_matrix(actions, "split_ratio", close, fill=1.0)
+    return 1.0 / splits.cumprod()
 
 
 def _event_matrix(
@@ -140,10 +152,13 @@ def _event_matrix(
 
 
 def adjust_panel(panel: Panel, actions: pd.DataFrame) -> Panel:
-    """复权：价格乘总收益因子，成交量乘拆股因子（拆股后股数口径变了）。"""
-    price_factor = adjustment_factors(panel.close, actions)
-    # 拆股后股数口径变了，成交量要按价格因子的倒数调整，这样「量 × 价」保持不变
-    volume_factor = 1.0 / adjustment_factors(panel.close, actions, include_dividends=False)
+    """因果复权：收益率和标签用这一版。
+
+    不做「除以最后一天」的后复权——那会让历史价格依赖未来的分红/拆股。代价是价格水平
+    停在各标的自身的累计口径上，但对收益率没有影响。
+    """
+    price_factor = cumulative_price_factor(panel.close, actions)
+    volume_factor = cumulative_volume_factor(panel.close, actions)
 
     adjusted = Panel(
         open=panel.open * price_factor,
@@ -154,6 +169,36 @@ def adjust_panel(panel: Panel, actions: pd.DataFrame) -> Panel:
     )
     _warn_suspicious_moves(adjusted)
     return adjusted
+
+
+def point_in_time_panels(
+    panel: Panel, actions: pd.DataFrame, *, window: int
+) -> Iterator[tuple[pd.Timestamp, Panel]]:
+    """逐日产出「以该日为止」的复权窗口，因子用这一版。
+
+    每一天都把窗口缩放到当日的价格单位：只用当日及之前的事件，未来怎么复权都不会影响
+    今天算出来的因子。window 必须不小于因子里最长的回看天数，否则窗口头部的因子算不出来。
+    """
+    if window < 2:
+        raise ValueError("window 至少要有 2 个交易日")
+
+    price_factor = cumulative_price_factor(panel.close, actions)
+    volume_factor = cumulative_volume_factor(panel.close, actions)
+
+    for position in range(window - 1, len(panel.dates)):
+        rows = slice(position - window + 1, position + 1)
+        price_scale = price_factor.iloc[rows].div(price_factor.iloc[position])
+        volume_scale = volume_factor.iloc[rows].div(volume_factor.iloc[position])
+        yield (
+            panel.dates[position],
+            Panel(
+                open=panel.open.iloc[rows] * price_scale,
+                high=panel.high.iloc[rows] * price_scale,
+                low=panel.low.iloc[rows] * price_scale,
+                close=panel.close.iloc[rows] * price_scale,
+                volume=panel.volume.iloc[rows] * volume_scale,
+            ),
+        )
 
 
 def _warn_suspicious_moves(panel: Panel, threshold: float = SUSPICIOUS_DAILY_MOVE) -> None:

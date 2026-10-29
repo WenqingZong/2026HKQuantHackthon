@@ -51,9 +51,10 @@ def run_download(cfg: Config) -> pd.DataFrame:
 
 def run_features(cfg: Config) -> pd.DataFrame:
     """计算因子与前瞻收益，生成 (date, symbol) 长表数据集。"""
-    panel = _adjusted_panel(cfg)
+    panel = load_panel(cfg.data.output)
     data = build_dataset(
         panel,
+        load_actions(cfg.data.corporate_actions),
         alphas=cfg.dataset.alphas,
         horizon=cfg.dataset.horizon,
         normalize=cfg.dataset.normalize,
@@ -270,7 +271,10 @@ def _backtest(predictions: pd.DataFrame, returns: pd.DataFrame, cfg: Config) -> 
 
 
 def _adjusted_panel(cfg: Config) -> Panel:
-    """原始行情 + 分红/拆股复权。特征和回测都从这里取，避免两处口径不一致。"""
+    """因果复权后的行情，回测的日收益从这里取（收益率与归一化方式无关）。
+
+    特征的复权走 dataset 里的 point-in-time 窗口，两者口径不同但收益率完全一致。
+    """
     return adjust_panel(load_panel(cfg.data.output), load_actions(cfg.data.corporate_actions))
 
 

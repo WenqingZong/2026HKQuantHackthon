@@ -69,7 +69,10 @@ def write_report(
     lines = [
         "# 训练报告",
         "",
-        f"- 数据源：{cfg.data.dataset} / {cfg.data.schema}（价格与成交量已按分红、拆股复权）",
+        (
+            f"- 数据源：{cfg.data.dataset} / {cfg.data.schema}"
+            "（分红、拆股按 point-in-time 因果复权，不含未来事件）"
+        ),
         f"- 因子：{', '.join(cfg.dataset.alphas)}",
         (
             f"- 标签：{cfg.dataset.label_lag} 个交易日后进场、"

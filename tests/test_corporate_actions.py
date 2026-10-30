@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from hkq.corporate_actions import adjust_panel, point_in_time_panels
+from hkq.corporate_actions import adjust_panel
 from hkq.data import Panel
 
 
@@ -77,21 +77,6 @@ def test_reverse_split_is_handled() -> None:
     adjusted = adjust_panel(panel, actions)
 
     assert adjusted.close["AAA"].pct_change().iloc[2] == pytest.approx(0.0)
-
-
-def test_point_in_time_window_ignores_future_events() -> None:
-    """第 8 天才拆股，第 8 天之前算出来的窗口必须和「没发生拆股」一模一样。"""
-    panel = make_panel([100.0] * 10)
-    future_split = make_actions([panel.dates[8]], splits=[5.0])
-
-    with_split = point_in_time_panels(panel, future_split, window=5)
-    without_split = point_in_time_panels(panel, empty_actions(), window=5)
-    for (date_a, window_a), (date_b, window_b) in zip(with_split, without_split, strict=True):
-        assert date_a == date_b
-        # 拆股当天及之后的窗口本来就该按新单位缩放，只比较事件之前
-        if date_a >= panel.dates[8]:
-            continue
-        pd.testing.assert_frame_equal(window_a.close, window_b.close)
 
 
 def test_adjust_panel_is_causal() -> None:

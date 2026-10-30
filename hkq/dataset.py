@@ -6,12 +6,10 @@ import numpy as np
 import pandas as pd
 
 from hkq.alphas import compute_alphas
-from hkq.corporate_actions import cumulative_price_factor, point_in_time_panels
+from hkq.corporate_actions import adjust_panel
 from hkq.data import Panel
 
 LABEL = "label"
-# PIT 滚动窗比预热期多留几天，保证窗口头部的滚动算子还有足够样本
-_WINDOW_MARGIN = 5
 
 
 def build_dataset(
@@ -27,8 +25,8 @@ def build_dataset(
 ) -> pd.DataFrame:
     """计算因子和前瞻收益，返回以 (date, symbol) 为索引的长表。
 
-    panel 是**原始**行情，复权在这里做：因子走逐日的 point-in-time 窗口（只用当日及之前
-    的分红/拆股），标签走因果复权后的收益率。这样 t 日的特征不会沾到 t 之后的公司行为。
+    panel 是**原始**行情，复权在这里做：因果复权（只用当日及之前的分红/拆股）之后，
+    因子和标签都从同一份复权价上算，t 日的特征不会沾到 t 之后才发生的事件。
 
     参数
     ----
@@ -42,23 +40,20 @@ def build_dataset(
     """
     if normalize not in {"rank", "zscore"}:
         raise ValueError(f"不支持的 normalize 方式：{normalize}")
-
-    window = min_history + _WINDOW_MARGIN
-    if window >= len(panel.dates):
+    if min_history >= len(panel.dates):
         raise ValueError(f"min_history={min_history} 超过了数据长度 {len(panel.dates)}")
 
-    frames = _point_in_time_alphas(panel, actions, alphas=alphas, window=window)
-    # 收益率对复权常数不敏感，用因果复权后的收盘价即可
-    growth_close = panel.close * cumulative_price_factor(panel.close, actions)
+    adjusted = adjust_panel(panel, actions)
+    frames = compute_alphas(adjusted, alphas)
     frames[LABEL] = _normalize_label(
-        forward_return(growth_close, horizon=horizon, lag=label_lag), label_norm
+        forward_return(adjusted.close, horizon=horizon, lag=label_lag), label_norm
     )
 
     data = pd.concat([_to_long(frame, name) for name, frame in frames.items()], axis=1)
     data = data.replace([np.inf, -np.inf], np.nan).sort_index()
 
-    # PIT 窗口头几天凑不满回看窗口，这些行直接裁掉（不留「全 0 = 中性」的假样本）
-    data = data[data.index.get_level_values("date") >= panel.dates[window - 1]]
+    # 因子有回看窗口，前 min_history 个交易日只有半截数据，直接裁掉
+    data = data[data.index.get_level_values("date") >= panel.dates[min_history]]
 
     features = feature_columns(data)
     grouped = data.groupby(level="date")[features]
@@ -71,20 +66,6 @@ def build_dataset(
     data[features] = data[features].fillna(0.0)
     data = data.dropna(subset=[LABEL])
     return data.sort_index()
-
-
-def _point_in_time_alphas(
-    panel: Panel, actions: pd.DataFrame, *, alphas: tuple[str, ...] | list[str], window: int
-) -> dict[str, pd.DataFrame]:
-    """逐日算因子，每天只用当天及之前的数据，价格按「以当天为止」的事件复权。
-
-    这样处理的代价是要跑 len(dates) 次滚动窗口，换来的是因子不会知道未来的分红和拆股。
-    """
-    last_rows: dict[str, dict[pd.Timestamp, pd.Series]] = {name: {} for name in alphas}
-    for date, window_panel in point_in_time_panels(panel, actions, window=window):
-        for name, frame in compute_alphas(window_panel, alphas).items():
-            last_rows[name][date] = frame.iloc[-1]
-    return {name: pd.DataFrame(rows).T.sort_index() for name, rows in last_rows.items()}
 
 
 def _normalize_label(label: pd.DataFrame, method: str) -> pd.DataFrame:

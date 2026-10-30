@@ -14,6 +14,7 @@ Python 3.14, managed with `uv`. Torch is pinned to the `pytorch-cu130` index in 
 uv sync                                              # install deps
 uv run python main.py download                       # Databento -> data/raw/bars_daily.parquet (costs money, ~$0.2)
 uv run python main.py features                       # -> data/processed/features.parquet (+ .meta.json)
+uv run python main.py select                         # IC + 相关性筛因子 -> artifacts/factor_selection.csv
 uv run python main.py train [--models xgboost,mlp]   # -> artifacts/
 uv run python main.py all                            # download + features + train
 uv run python main.py --config path.yaml --log-level DEBUG train   # global flags go before the subcommand
@@ -28,7 +29,7 @@ uv run mypy                                          # config in pyproject; unty
 
 ## Architecture
 
-Everything is driven by `config/default.yaml`, parsed into frozen dataclasses in `hkq/config.py` (relative paths resolve against the repo root). Adding a config key means updating both the YAML and `Config.load`. `main.py` configures logging and dispatches to `hkq/pipeline.py`'s `run_download` / `run_features` / `run_train`; each stage communicates only through parquet files on disk. `pipeline.py` only orchestrates: IC statistics live in `hkq/ic.py`, portfolio simulation and cost accounting in `hkq/portfolio.py`, every artifact (JSON, per-model CSVs, `report.md`) is written by `hkq/report.py`, and dividend/split adjustment lives in `hkq/corporate_actions.py`. Modules log via `logging.getLogger(__name__)`, never `print`.
+Everything is driven by `config/default.yaml`, parsed into frozen dataclasses in `hkq/config.py` (relative paths resolve against the repo root). Adding a config key means updating both the YAML and `Config.load`. `main.py` configures logging and dispatches to `hkq/pipeline.py`'s `run_download` / `run_features` / `run_train`; each stage communicates only through parquet files on disk. `pipeline.py` only orchestrates: Factor selection (two-period IC screen + correlation dedupe) lives in `hkq/selection.py`; IC statistics live in `hkq/ic.py`, portfolio simulation and cost accounting in `hkq/portfolio.py`, every artifact (JSON, per-model CSVs, `report.md`) is written by `hkq/report.py`, and dividend/split adjustment lives in `hkq/corporate_actions.py`. Modules log via `logging.getLogger(__name__)`, never `print`.
 
 Two data shapes, and conversion between them is the main thing to keep straight:
 

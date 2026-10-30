@@ -11,9 +11,11 @@ data:
   # EQUS.SUMMARY 是合并全市场成交后的官方日线汇总（每个代码每天一条记录），
   # 覆盖 2024-07-01 起。若需要更长的历史，可换成 EQUS.MINI / DBEQ.BASIC，
   # 代价是成交量只包含部分交易场所（见 README「数据选型」）。
-  dataset: EQUS.SUMMARY
+  # EQUS.MINI 的价格是合并后的完整行情，2023-03-28 起；成交量只是部分场所的采样
+  # （约为合并成交量的 3–8%，且比例随时间漂移），但比率类因子对整体缩放不敏感
+  dataset: EQUS.MINI
   schema: ohlcv-1d
-  start: "2024-07-01"
+  start: "2023-03-28"
   end: null # null 表示取数据集可用的最后一个交易日
   output: data/raw/bars_daily.parquet
   # 分红/拆股记录（yfinance，download 阶段一起拉）。原始价必须复权后再算因子和回测
@@ -21,24 +23,195 @@ data:
 
 dataset:
   # 选中实现的 Alpha101 因子（只依赖日频 OHLCV 的那一批）
+  # 186 个因子 = 78 个 Alpha101 + 111 个 Alpha158 - 3 组重复各去掉一个
+  # （alpha033≡-KMID、alpha101≡KMID2、alpha054≡-KSFT2，保留 Alpha101 那一侧）
   alphas:
+    - alpha001
     - alpha002
+    - alpha003
+    - alpha004
+    - alpha005
     - alpha006
     - alpha008
     - alpha009
+    - alpha010
+    - alpha011
     - alpha012
-    - alpha014
+    - alpha013
+    - alpha015
+    - alpha016
+    - alpha017
+    - alpha018
+    - alpha019
     - alpha020
+    - alpha021
     - alpha022
     - alpha023
+    - alpha024
+    - alpha025
     - alpha026
+    - alpha027
+    - alpha028
+    - alpha029
+    - alpha030
+    - alpha031
+    - alpha032
     - alpha033
     - alpha034
+    - alpha035
+    - alpha036
+    - alpha037
     - alpha038
+    - alpha039
     - alpha040
+    - alpha041
+    - alpha042
+    - alpha043
     - alpha044
+    - alpha045
+    - alpha046
+    - alpha047
+    - alpha049
+    - alpha050
+    - alpha051
+    - alpha052
     - alpha053
+    - alpha054
+    - alpha055
+    - alpha060
+    - alpha061
+    - alpha062
+    - alpha064
+    - alpha065
+    - alpha066
+    - alpha068
+    - alpha071
+    - alpha072
+    - alpha073
+    - alpha074
+    - alpha075
+    - alpha077
+    - alpha078
+    - alpha081
+    - alpha083
+    - alpha084
+    - alpha085
+    - alpha086
+    - alpha088
+    - alpha092
+    - alpha094
+    - alpha095
+    - alpha098
+    - alpha099
     - alpha101
+    - BETA10
+    - BETA20
+    - BETA30
+    - BETA5
+    - BETA60
+    - CNTN10
+    - CNTP20
+    - CNTN5
+    - CNTP30
+    - CNTP60
+    - CORD10
+    - CORD20
+    - CORD30
+    - CORD5
+    - CORD60
+    - CORR10
+    - CORR20
+    - CORR30
+    - CORR5
+    - CORR60
+    - HIGH0
+    - IMAX10
+    - IMAX20
+    - IMAX30
+    - IMAX5
+    - IMAX60
+    - IMIN10
+    - IMIN20
+    - IMIN30
+    - IMIN5
+    - IMIN60
+    - IMXD10
+    - IMXD20
+    - IMXD30
+    - IMXD5
+    - IMXD60
+    - KLEN
+    - KLOW
+    - KLOW2
+    - KSFT
+    - KUP
+    - KUP2
+    - LOW0
+    - MA10
+    - MA5
+    - QTLD60
+    - MAX10
+    - MAX5
+    - MAX60
+    - MIN10
+    - MIN20
+    - MIN5
+    - MIN60
+    - QTLD10
+    - QTLD30
+    - QTLD5
+    - QTLU10
+    - QTLU20
+    - QTLU5
+    - QTLU60
+    - RANK10
+    - RANK20
+    - RANK5
+    - RANK60
+    - RESI10
+    - RESI20
+    - RESI30
+    - RESI5
+    - RESI60
+    - ROC10
+    - ROC20
+    - ROC30
+    - ROC5
+    - ROC60
+    - RSQR10
+    - RSQR20
+    - RSQR30
+    - RSQR5
+    - RSQR60
+    - RSV10
+    - RSV20
+    - RSV5
+    - STD10
+    - STD20
+    - STD5
+    - STD60
+    - SUMP10
+    - SUMN20
+    - SUMP30
+    - SUMN5
+    - SUMN60
+    - VMA10
+    - VMA30
+    - VMA5
+    - VSTD10
+    - VSTD20
+    - VSTD5
+    - VSTD60
+    - VSUMN10
+    - VSUMD20
+    - VSUMP30
+    - VSUMN5
+    - VSUMN60
+    - WVMA10
+    - WVMA20
+    - WVMA30
+    - WVMA5
+    - WVMA60
   horizon: 5 # 标签：未来 5 个交易日收益（与调仓周期保持一致）
   label_lag: 1 # 因子用到当日收盘价，最早下一个交易日才能成交，标签相应后移 1 天
   label_norm: rank # 标签横截面标准化：rank / zscore / none。rank 等于把回归变成排序，与 top-k 选股一致
@@ -47,7 +220,7 @@ dataset:
   output: data/processed/features.parquet
 
 split:
-  train: ["2024-08-01", "2025-06-30"]
+  train: ["2023-05-01", "2025-06-30"]
   valid: ["2025-07-01", "2026-01-31"]
   test: ["2026-02-01", "2026-10-27"]
 
@@ -58,30 +231,31 @@ train:
   artifacts: artifacts
 
 models:
+  # 下面的参数是 scripts/sweep_models.py 在验证集 ICIR 上选出来的（测试集只看不选）
   xgboost:
-    n_estimators: 600
+    n_estimators: 1500
     learning_rate: 0.03
-    max_depth: 4
-    min_child_weight: 20
+    max_depth: 5
+    min_child_weight: 100
     subsample: 0.8
-    colsample_bytree: 0.8
+    colsample_bytree: 0.6
     reg_lambda: 2.0
   lightgbm:
-    n_estimators: 600
+    n_estimators: 900
     learning_rate: 0.03
-    num_leaves: 15
-    min_child_samples: 100
-    subsample: 0.8
-    colsample_bytree: 0.8
-    reg_lambda: 2.0
+    num_leaves: 31
+    min_child_samples: 200
+    subsample: 0.7
+    colsample_bytree: 0.5
+    reg_lambda: 3.0
   mlp:
-    hidden: [128, 64]
-    dropout: 0.2
+    hidden: [2048, 1024, 512]
+    dropout: 0.4
     lr: 0.0003
-    weight_decay: 0.0001
-    batch_size: 512
-    max_epochs: 300
-    patience: 30
+    weight_decay: 0.01
+    batch_size: 4096
+    max_epochs: 500
+    patience: 50
 
 backtest:
   top_k: 10 # 每次调仓等权买入预测排名前 k 只

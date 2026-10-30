@@ -19,17 +19,21 @@ ETF 的「未来缩放」偏离超过 10%，极端如 PPLT（10:1，0.10）、ET
 所以本模块只提供**因果**因子（只用当日及之前的事件），并且不做事后归一化：
 
 - `adjust_panel` / `cumulative_price_factor`：给收益率、标签用，全程只用过去的事件；
-- `point_in_time_panels`：给因子用，逐日把最近若干天缩放到「以当日为止」的价格单位，
-  和当天的交易所见即所得，不含任何未来信息。
+- 因子和标签都从 `adjust_panel` 的 causal 序列上算，不含未来事件。
+
+代价是价格水平停在「各标的自身的累计口径」上：拆过股的标的，历史价格和没拆过的相比
+差一个固定的倍数。对收益率、比率类因子没有影响；对用价格差构造的因子，这是跨标的的
+口径差异（不是未来信息），只涉及样本期内拆过股的十来只 ETF。
 """
 
 from __future__ import annotations
 
 import logging
+import time
 import warnings
-from collections.abc import Iterator
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -39,6 +43,10 @@ logger = logging.getLogger(__name__)
 
 # 复权后还能看到的单日涨跌幅（超过这个数说明有未被识别的事件，值得人看一眼）
 SUSPICIOUS_DAILY_MOVE = 0.35
+# yfinance 会限流：分批请求，失败就退避重试，别一次性把 182 个代码怼上去
+CHUNK_SIZE = 40
+MAX_ATTEMPTS = 4
+BACKOFF_SECONDS = 30.0
 
 
 def download_actions(
@@ -51,31 +59,23 @@ def download_actions(
     finish = end or pd.Timestamp.today().strftime("%Y-%m-%d")
     logger.info(f"[actions] yfinance {len(symbols)} symbols | {start} -> {finish}")
 
-    with warnings.catch_warnings():
-        # yfinance 内部还在用 pandas 已弃用的 inplace 参数
-        warnings.filterwarnings("ignore", message="The inplace keyword")
-        warnings.filterwarnings("ignore", category=FutureWarning)
-        raw = yf.download(
-            symbols,
-            start=start,
-            end=finish,
-            actions=True,
-            auto_adjust=False,
-            group_by="ticker",
-            progress=False,
+    blocks: dict[str, pd.DataFrame] = {}
+    for offset in range(0, len(symbols), CHUNK_SIZE):
+        chunk = symbols[offset : offset + CHUNK_SIZE]
+        blocks.update(_fetch_actions(chunk, start=start, end=finish))
+        time.sleep(2.0)
+
+    missing = sorted(set(symbols) - set(blocks))
+    if missing:
+        logger.warning(f"[actions] yfinance returned no data for {len(missing)} symbols: {missing}")
+    if not blocks:
+        raise RuntimeError(
+            "yfinance 一个代码都没返回（多半是被限流了）；等几分钟再跑，"
+            "不要把空表写盘覆盖掉已有的分红/拆股数据"
         )
 
-    returned = set(raw.columns.get_level_values(0))
-    missing = sorted(set(symbols) - returned)
-    if missing:
-        logger.warning(f"[actions] yfinance returned no data for {missing}")
-
-    frames = [_actions_of(raw[symbol], symbol) for symbol in symbols if symbol in returned]
-    actions = (
-        pd.concat(frames, ignore_index=True)
-        if frames
-        else pd.DataFrame(columns=["date", "symbol", "dividend", "split_ratio"])
-    )
+    frames = [_actions_of(block, symbol) for symbol, block in blocks.items()]
+    actions = pd.concat(frames, ignore_index=True)
     actions = actions.sort_values(["date", "symbol"]).reset_index(drop=True)
 
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -91,6 +91,47 @@ def download_actions(
             f"ratio={float(record['split_ratio']):.4g}"
         )
     return actions
+
+
+def _fetch_actions(symbols: list[str], *, start: str, end: str) -> dict[str, pd.DataFrame]:
+    """分批拉，遇到限流就退避重试；返回真正拿到数据的那些代码。"""
+    pending = list(symbols)
+    blocks: dict[str, pd.DataFrame] = {}
+
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        if not pending:
+            break
+        if attempt > 1:
+            wait = BACKOFF_SECONDS * (attempt - 1)
+            logger.warning(
+                f"[actions] retry {attempt}/{MAX_ATTEMPTS} for {len(pending)} symbols "
+                f"in {wait:.0f}s"
+            )
+            time.sleep(wait)
+
+        with warnings.catch_warnings():
+            # yfinance 内部还在用 pandas 已弃用的 inplace 参数
+            warnings.filterwarnings("ignore", message="The inplace keyword")
+            warnings.filterwarnings("ignore", category=FutureWarning)
+            raw = yf.download(
+                pending,
+                start=start,
+                end=end,
+                actions=True,
+                auto_adjust=False,
+                group_by="ticker",
+                progress=False,
+            )
+
+        if raw.empty:
+            continue
+        returned = set(raw.columns.get_level_values(0))
+        for symbol in pending:
+            if symbol in returned:
+                blocks[symbol] = raw[symbol]
+        pending = [symbol for symbol in pending if symbol not in blocks]
+
+    return blocks
 
 
 def _actions_of(block: pd.DataFrame, symbol: str) -> pd.DataFrame:
@@ -111,6 +152,41 @@ def _actions_of(block: pd.DataFrame, symbol: str) -> pd.DataFrame:
     frame = frame.assign(symbol=symbol)
     frame.index = pd.DatetimeIndex(frame.index).normalize()
     return frame.reset_index(names="date")
+
+
+def splits_from_price_jumps(
+    panel: Panel, *, threshold: float = 0.20, tolerance: float = 0.06
+) -> pd.DataFrame:
+    """yfinance 不可用时的兜底：从价格跳空反推拆股，分红补不了（只能记 0）。
+
+    判据是「跳空幅度非常接近某个整数倍」，所以真实的暴涨暴跌（MSOS 的 ±30%）不会被误判成拆股。
+    这条路径只保证不出现「3 倍假暴跌」，除息日的价格下跌仍然是未复权的。
+    """
+    rows: list[dict[str, object]] = []
+    returns = panel.close.pct_change()
+    for symbol in panel.symbols:
+        for date, ret in returns[symbol].items():
+            if not np.isfinite(ret) or abs(ret) < threshold:
+                continue
+            implied = 1.0 / (1.0 + ret)
+            ratio = np.nan
+            for candidate in range(2, 21):
+                if abs(implied / candidate - 1) < tolerance:
+                    ratio = float(candidate)
+                    break
+            if not np.isfinite(ratio):
+                grown = 1.0 + ret
+                for candidate in range(2, 21):
+                    if abs(grown / candidate - 1) < tolerance:
+                        ratio = 1.0 / candidate
+                        break
+            if np.isfinite(ratio):
+                rows.append({"date": date, "symbol": symbol, "dividend": 0.0, "split_ratio": ratio})
+    frame = pd.DataFrame(rows, columns=["date", "symbol", "dividend", "split_ratio"])
+    logger.warning(
+        "[actions] yfinance 不可用：从价格跳空反推出 %d 个拆股事件，分红未复权", len(frame)
+    )
+    return frame
 
 
 def load_actions(path: Path) -> pd.DataFrame:
@@ -169,36 +245,6 @@ def adjust_panel(panel: Panel, actions: pd.DataFrame) -> Panel:
     )
     _warn_suspicious_moves(adjusted)
     return adjusted
-
-
-def point_in_time_panels(
-    panel: Panel, actions: pd.DataFrame, *, window: int
-) -> Iterator[tuple[pd.Timestamp, Panel]]:
-    """逐日产出「以该日为止」的复权窗口，因子用这一版。
-
-    每一天都把窗口缩放到当日的价格单位：只用当日及之前的事件，未来怎么复权都不会影响
-    今天算出来的因子。window 必须不小于因子里最长的回看天数，否则窗口头部的因子算不出来。
-    """
-    if window < 2:
-        raise ValueError("window 至少要有 2 个交易日")
-
-    price_factor = cumulative_price_factor(panel.close, actions)
-    volume_factor = cumulative_volume_factor(panel.close, actions)
-
-    for position in range(window - 1, len(panel.dates)):
-        rows = slice(position - window + 1, position + 1)
-        price_scale = price_factor.iloc[rows].div(price_factor.iloc[position])
-        volume_scale = volume_factor.iloc[rows].div(volume_factor.iloc[position])
-        yield (
-            panel.dates[position],
-            Panel(
-                open=panel.open.iloc[rows] * price_scale,
-                high=panel.high.iloc[rows] * price_scale,
-                low=panel.low.iloc[rows] * price_scale,
-                close=panel.close.iloc[rows] * price_scale,
-                volume=panel.volume.iloc[rows] * volume_scale,
-            ),
-        )
 
 
 def _warn_suspicious_moves(panel: Panel, threshold: float = SUSPICIOUS_DAILY_MOVE) -> None:

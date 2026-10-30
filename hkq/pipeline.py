@@ -16,6 +16,7 @@ from hkq.ic import alpha_ic_table, daily_rank_ic, ic_summary
 from hkq.models import Regressor, build_model
 from hkq.portfolio import BacktestResult, backtest_topk, cost_sensitivity
 from hkq.report import split_summary, write_json, write_model_artifacts, write_report
+from hkq.selection import factor_correlation, select_factors
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,31 @@ def run_features(cfg: Config) -> pd.DataFrame:
         f"features={len(feature_columns(data))} -> {cfg.dataset.output}"
     )
     return data
+
+
+def run_select(cfg: Config) -> pd.DataFrame:
+    """在当前的候选池上做因子筛选：ICIR 过门槛 + 相关性去重，结果落到 artifacts。"""
+    data = pd.read_parquet(cfg.dataset.output)
+    splits = split_by_date(data, cfg.split.ranges())
+    features = feature_columns(data)
+    if len(features) < 2:
+        raise ValueError("候选池至少要有两个因子才能做筛选")
+
+    ic_train = alpha_ic_table(splits["train"], features)
+    ic_valid = alpha_ic_table(splits["valid"], features)
+    corr = factor_correlation(splits["train"], features)
+    table = select_factors(ic_train, ic_valid, corr)
+
+    cfg.train.artifacts.mkdir(parents=True, exist_ok=True)
+    path = cfg.train.artifacts / "factor_selection.csv"
+    table.to_csv(path)
+    kept = list(table.index[table["status"] == "kept"])
+    logger.info(
+        "[select] candidates=%d kept=%d:\n%s", len(table), len(kept), table.round(4).to_string()
+    )
+    logger.info("[select] 保留：%s", ", ".join(kept))
+    logger.info("[select] wrote %s", path)
+    return table
 
 
 def run_train(cfg: Config, models: tuple[str, ...] | None = None) -> pd.DataFrame:

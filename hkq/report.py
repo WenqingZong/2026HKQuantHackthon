@@ -71,7 +71,7 @@ def write_report(
         "",
         (
             f"- 数据源：{cfg.data.dataset} / {cfg.data.schema}"
-            "（分红、拆股按 point-in-time 因果复权，不含未来事件）"
+            "（价格按因果复权处理，不含未来事件；复权来源见 data/raw/corporate_actions.parquet）"
         ),
         f"- 因子：{', '.join(cfg.dataset.alphas)}",
         (

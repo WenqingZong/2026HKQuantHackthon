@@ -30,6 +30,7 @@ def main(argv: list[str] | None = None) -> None:
     subparsers.add_parser("download", help="从 Databento 下载日频 OHLCV")
     subparsers.add_parser("features", help="计算 Alpha101 因子并生成数据集")
 
+    subparsers.add_parser("select", help="按 IC 与相关性筛选因子")
     train_parser = subparsers.add_parser("train", help="训练并评估模型")
     train_parser.add_argument("--models", default=None, help="逗号分隔的模型名，默认读配置")
     subparsers.add_parser("all", help="依次执行 download -> features -> train")
@@ -46,6 +47,8 @@ def main(argv: list[str] | None = None) -> None:
         pipeline.run_download(cfg)
     elif args.command == "features":
         pipeline.run_features(cfg)
+    elif args.command == "select":
+        pipeline.run_select(cfg)
     elif args.command == "train":
         models = tuple(args.models.split(",")) if args.models else None
         pipeline.run_train(cfg, models)

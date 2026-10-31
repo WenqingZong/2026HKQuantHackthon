@@ -1,0 +1,19 @@
+{
+  "dataset": "EQUS.SUMMARY",
+  "schema": "ohlcv-1d",
+  "start": "2024-07-01",
+  "end": "2026-10-29",
+  "n_symbols_requested": 182,
+  "n_symbols_returned": 182,
+  "n_rows": 103440,
+  "date_range": [
+    "2024-07-01",
+    "2026-10-28"
+  ],
+  "degraded_days": [
+    "2025-12-15",
+    "2026-01-12",
+    "2026-08-31"
+  ],
+  "downloaded_at": "2026-10-29T09:43:46+00:00"
+}

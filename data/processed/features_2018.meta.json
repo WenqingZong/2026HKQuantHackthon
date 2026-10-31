@@ -1,0 +1,33 @@
+{
+  "alphas": [
+    "alpha002",
+    "alpha006",
+    "alpha008",
+    "alpha009",
+    "alpha012",
+    "alpha014",
+    "alpha020",
+    "alpha022",
+    "alpha023",
+    "alpha026",
+    "alpha033",
+    "alpha034",
+    "alpha038",
+    "alpha040",
+    "alpha044",
+    "alpha053",
+    "alpha101"
+  ],
+  "horizon": 5,
+  "label_lag": 1,
+  "label_norm": "rank",
+  "normalize": "rank",
+  "min_history": 20,
+  "n_rows": 358970,
+  "n_dates": 2106,
+  "n_symbols": 182,
+  "date_range": [
+    "2018-06-05",
+    "2026-10-20"
+  ]
+}

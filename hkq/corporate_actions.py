@@ -190,12 +190,34 @@ def splits_from_price_jumps(
 
 
 def load_actions(path: Path) -> pd.DataFrame:
-    """读取已经下载好的分红/拆股表；缺失时给出可执行的提示。"""
+    """读取已经下载好的分红/拆股表；缺失时给出可执行的提示。
+
+    文件里存的是 yfinance 原样返回的数值，分红在这里换算回当时每股实际派的金额。
+    """
     if not path.exists():
         raise FileNotFoundError(f"找不到 {path}，先跑一次 main.py download 把分红与拆股记录拉下来")
     actions = pd.read_parquet(path)
     actions["date"] = pd.to_datetime(actions["date"])
-    return actions
+    return raw_dividends(actions)
+
+
+def raw_dividends(actions: pd.DataFrame) -> pd.DataFrame:
+    """把 yfinance 的分红还原成除息日当时每股的实际金额。
+
+    yfinance 的分红按**之后**发生的拆股追溯调整过：SCHD 2024-10 拆 3:1 之前每季派约 0.75 美元，
+    yfinance 给的是 0.25。复权因子用的是「分红 / 当日原始收盘价」，两者口径不一致会把拆股前的
+    股息率低估成 1/3。这里乘回除息日之后所有拆股比例的乘积（反向拆股的比例 < 1，同样适用）。
+
+    这一步用到了「未来的拆股」，但只是还原当时已经公开的派息金额，不引入任何未来信息。
+    """
+    splits = actions.loc[
+        actions["split_ratio"].fillna(1.0) != 1.0, ["symbol", "date", "split_ratio"]
+    ]
+    multiplier = pd.Series(1.0, index=actions.index)
+    for symbol, date, ratio in splits.itertuples(index=False, name=None):
+        earlier = (actions["symbol"] == symbol) & (actions["date"] < date)
+        multiplier = multiplier.where(~earlier, multiplier * float(ratio))
+    return actions.assign(dividend=actions["dividend"] * multiplier)
 
 
 def cumulative_price_factor(close: pd.DataFrame, actions: pd.DataFrame) -> pd.DataFrame:

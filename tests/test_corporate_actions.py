@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from hkq.corporate_actions import adjust_panel
+from hkq.corporate_actions import adjust_panel, raw_dividends
 from hkq.data import Panel
 
 
@@ -88,3 +88,30 @@ def test_adjust_panel_is_causal() -> None:
     without_split = adjust_panel(panel, empty_actions()).close["AAA"]
 
     assert with_split.iloc[:3].tolist() == pytest.approx(without_split.iloc[:3].tolist())
+
+
+def test_dividends_are_restored_to_pre_split_amounts() -> None:
+    # yfinance 把拆股前的分红按之后的拆股除过：3:1 之前派 0.75，它给 0.25
+    actions = make_actions(
+        [pd.Timestamp("2024-09-25"), pd.Timestamp("2024-10-11"), pd.Timestamp("2024-12-11")],
+        dividends=[0.25, 0.0, 0.265],
+        splits=[1.0, 3.0, 1.0],
+    )
+
+    restored = raw_dividends(actions)
+
+    assert restored["dividend"].tolist() == pytest.approx([0.75, 0.0, 0.265])
+
+
+def test_reverse_split_and_other_symbols_are_handled() -> None:
+    actions = make_actions(
+        [pd.Timestamp("2020-01-02"), pd.Timestamp("2020-02-03"), pd.Timestamp("2020-01-02")],
+        dividends=[0.4, 0.0, 0.1],
+        splits=[1.0, 0.25, 1.0],
+        symbols=["AAA", "AAA", "BBB"],
+    )
+
+    restored = raw_dividends(actions)
+
+    # 1:4 反向拆股之前每股派 0.1，yfinance 按新股数折算成 0.4；BBB 没拆股不受影响
+    assert restored["dividend"].tolist() == pytest.approx([0.1, 0.0, 0.1])

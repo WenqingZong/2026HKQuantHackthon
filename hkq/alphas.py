@@ -1,4 +1,4 @@
-"""Alpha101 里只依赖日频 OHLCV 的那部分因子。
+"""Alpha101 因子（78 个，全部只依赖日频 OHLCV）。
 
 原文：Kakushadze, "101 Formulaic Alphas", 2015 (https://arxiv.org/abs/1601.00991)。
 约定与原文一致：
@@ -7,8 +7,10 @@
 * delta / ts_* 是按代码沿时间轴的算子；
 * 返回值越大，代表该因子看多这只 ETF 的力度越强。
 
-需要 vwap、行业分类或 adv20 的因子没有实现——日频 OHLCV 给不出这些输入，
-硬凑一个近似值只会给后面的因子评估添噪声。
+* 日频没有真实 vwap，用 HLC3 代理；advN 用 N 日平均美元成交额；原文的分数窗口取整。
+  口径和 psq 的相关性分享包一致。需要行业分类的因子没有实现。
+* 条件分支（x < y ? a : b、min/max）在任一输入缺失时结果也缺失：NaN 比较为 False，
+  不处理的话预热期和未上市的日子会输出一个确定的 ±1，看起来像信号。
 """
 
 from __future__ import annotations
@@ -129,6 +131,38 @@ def _log_volume(volume: pd.DataFrame) -> pd.DataFrame:
     return cast(pd.DataFrame, np.log(volume.where(volume > 0)))
 
 
+def _valid(*frames: pd.DataFrame) -> pd.DataFrame:
+    """所有输入都不缺失的位置。条件分支要靠它把「输入还没算出来」留成缺失。"""
+    mask = frames[0].notna()
+    for frame in frames[1:]:
+        mask &= frame.notna()
+    return mask
+
+
+def _if_less(
+    left: pd.DataFrame, right: pd.DataFrame, then: float, otherwise: float
+) -> pd.DataFrame:
+    """left < right ? then : otherwise。
+
+    NaN 参与比较的结果是 False，直接 np.where 会把预热期/未上市的缺失值变成 otherwise
+    这个确定的信号，所以任一边缺失时结果也必须缺失。
+    """
+    chosen = pd.DataFrame(
+        np.where(left < right, then, otherwise), index=left.index, columns=left.columns
+    )
+    return chosen.where(_valid(left, right))
+
+
+def _min(first: pd.DataFrame, second: pd.DataFrame) -> pd.DataFrame:
+    """逐元素 min，任一边缺失则缺失（DataFrame.where 在 first 缺失时会静默取 second）。"""
+    return first.where(first < second, second).where(_valid(first, second))
+
+
+def _max(first: pd.DataFrame, second: pd.DataFrame) -> pd.DataFrame:
+    """逐元素 max，任一边缺失则缺失。"""
+    return first.where(first > second, second).where(_valid(first, second))
+
+
 # --- 因子 -------------------------------------------------------------------
 
 
@@ -183,9 +217,9 @@ def alpha006(panel: Panel) -> pd.DataFrame:
 def alpha009(panel: Panel) -> pd.DataFrame:
     """(0 < ts_min(delta(close, 1), 5)) ? delta(close, 1) : ((ts_max(delta(close, 1), 5) < 0) ? delta(close, 1) : -delta(close, 1))"""
     change = _delta(panel.close, 1)
-    all_up = _ts_min(change, 5) > 0
-    all_down = _ts_max(change, 5) < 0
-    return (-change).where(~all_up, change).where(~all_down, change)
+    window_min, window_max = _ts_min(change, 5), _ts_max(change, 5)
+    signed = (-change).where(~(window_min > 0), change).where(~(window_max < 0), change)
+    return signed.where(_valid(window_min, window_max))
 
 
 def alpha012(panel: Panel) -> pd.DataFrame:
@@ -195,8 +229,8 @@ def alpha012(panel: Panel) -> pd.DataFrame:
 
 def alpha023(panel: Panel) -> pd.DataFrame:
     """(((sum(high, 20) / 20) < high) ? (-1 * delta(high, 2)) : 0)"""
-    above_average = _ts_sum(panel.high, 20) / 20 < panel.high
-    return (-_delta(panel.high, 2)).where(above_average, 0.0)
+    average = _ts_sum(panel.high, 20) / 20
+    return (-_delta(panel.high, 2)).where(average < panel.high, 0.0).where(_valid(average))
 
 
 def alpha033(panel: Panel) -> pd.DataFrame:
@@ -232,10 +266,9 @@ def alpha053(panel: Panel) -> pd.DataFrame:
 def alpha010(panel: Panel) -> pd.DataFrame:
     """rank(((0 < ts_min(delta(close, 1), 4)) ? delta(close, 1) : ((ts_max(delta(close, 1), 4) < 0) ? delta(close, 1) : (-1 * delta(close, 1)))))"""
     change = _delta(panel.close, 1)
-    all_up = _ts_min(change, 4) > 0
-    all_down = _ts_max(change, 4) < 0
-    signed = (-change).where(~all_up, change).where(~all_down, change)
-    return _cs_rank(signed)
+    window_min, window_max = _ts_min(change, 4), _ts_max(change, 4)
+    signed = (-change).where(~(window_min > 0), change).where(~(window_max < 0), change)
+    return _cs_rank(signed.where(_valid(window_min, window_max)))
 
 
 def alpha018(panel: Panel) -> pd.DataFrame:
@@ -252,7 +285,7 @@ def alpha046(panel: Panel) -> pd.DataFrame:
     ) / 10
     change = -(panel.close - panel.close.shift(1))
     # trend > 0.25 -> -1；trend < 0 -> +1；其余用当日涨跌
-    return change.where(trend >= 0, 1.0).where(trend <= 0.25, -1.0)
+    return change.where(trend >= 0, 1.0).where(trend <= 0.25, -1.0).where(_valid(trend))
 
 
 def alpha049(panel: Panel) -> pd.DataFrame:
@@ -261,7 +294,7 @@ def alpha049(panel: Panel) -> pd.DataFrame:
         panel.close.shift(10) - panel.close
     ) / 10
     change = -(panel.close - panel.close.shift(1))
-    return change.where(trend >= -0.1, 1.0)
+    return change.where(trend >= -0.1, 1.0).where(_valid(trend))
 
 
 def alpha051(panel: Panel) -> pd.DataFrame:
@@ -270,7 +303,7 @@ def alpha051(panel: Panel) -> pd.DataFrame:
         panel.close.shift(10) - panel.close
     ) / 10
     change = -(panel.close - panel.close.shift(1))
-    return change.where(trend >= -0.05, 1.0)
+    return change.where(trend >= -0.05, 1.0).where(_valid(trend))
 
 
 def alpha054(panel: Panel) -> pd.DataFrame:
@@ -293,7 +326,8 @@ def alpha060(panel: Panel) -> pd.DataFrame:
 def alpha001(panel: Panel) -> pd.DataFrame:
     """rank(ts_argmax(signedpower(((returns < 0) ? stddev(returns, 20) : close), 2), 5)) - 0.5"""
     returns = _daily_return(panel.close)
-    base = panel.close.where(returns >= 0, _ts_std(returns, 20))
+    volatility = _ts_std(returns, 20)
+    base = panel.close.where(returns >= 0, volatility).where(_valid(volatility))
     return _cs_rank(_ts_argmax(_signed_power(base, 2), 5)) - 0.5
 
 
@@ -361,7 +395,7 @@ def alpha021(panel: Panel) -> pd.DataFrame:
     ratio = panel.volume / _adv(panel, 20)
     mean8, std8 = _ts_sum(close, 8) / 8, _ts_std(close, 8)
     mean2 = _ts_sum(close, 2) / 2
-    return pd.DataFrame(
+    chosen = pd.DataFrame(
         np.where(
             mean8 + std8 < mean2,
             -1.0,
@@ -370,13 +404,14 @@ def alpha021(panel: Panel) -> pd.DataFrame:
         index=close.index,
         columns=close.columns,
     )
+    return chosen.where(_valid(mean8, std8, mean2, ratio))
 
 
 def alpha024(panel: Panel) -> pd.DataFrame:
     """((((delta(sum(close, 100) / 100, 100) / delay(close, 100)) <= 0.05) ? (-1 * (close - ts_min(close, 100))) : (-1 * delta(close, 3)))"""
     trend = (_delta(_ts_sum(panel.close, 100) / 100, 100)) / panel.close.shift(100)
     long_leg = -(panel.close - _ts_min(panel.close, 100))
-    return long_leg.where(trend <= 0.05, -_delta(panel.close, 3))
+    return long_leg.where(trend <= 0.05, -_delta(panel.close, 3)).where(_valid(trend))
 
 
 def alpha025(panel: Panel) -> pd.DataFrame:
@@ -391,7 +426,8 @@ def alpha027(panel: Panel) -> pd.DataFrame:
     """(0.5 < rank((sum(correlation(rank(volume), rank(vwap), 6), 2) / 2.0))) ? -1 : 1"""
     corr = _ts_corr(_cs_rank(panel.volume), _cs_rank(_vwap(panel)), 6)
     rank = _cs_rank(_ts_sum(corr, 2) / 2.0)
-    return pd.DataFrame(np.where(rank > 0.5, -1.0, 1.0), index=rank.index, columns=rank.columns)
+    half = pd.DataFrame(0.5, index=rank.index, columns=rank.columns)
+    return _if_less(half, rank, -1.0, 1.0)
 
 
 def alpha028(panel: Panel) -> pd.DataFrame:
@@ -543,7 +579,7 @@ def alpha061(panel: Panel) -> pd.DataFrame:
     vwap = _vwap(panel)
     left = _cs_rank(vwap - _ts_min(vwap, 16))
     right = _cs_rank(_ts_corr(vwap, _adv(panel, 180), 18))
-    return pd.DataFrame(np.where(left < right, 1.0, -1.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, 1.0, -1.0)
 
 
 def alpha062(panel: Panel) -> pd.DataFrame:
@@ -553,8 +589,8 @@ def alpha062(panel: Panel) -> pd.DataFrame:
     inner = (_cs_rank(panel.open) + _cs_rank(panel.open)) < (
         _cs_rank((panel.high + panel.low) / 2) + _cs_rank(panel.high)
     )
-    right = _cs_rank(inner.astype(float))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    right = _cs_rank(inner.astype(float).where(_valid(panel.open, panel.high, panel.low)))
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha064(panel: Panel) -> pd.DataFrame:
@@ -568,7 +604,7 @@ def alpha064(panel: Panel) -> pd.DataFrame:
         )
     )
     right = _cs_rank(_delta((panel.high + panel.low) / 2 * 0.178404 + vwap * 0.821596, 4))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha065(panel: Panel) -> pd.DataFrame:
@@ -578,7 +614,7 @@ def alpha065(panel: Panel) -> pd.DataFrame:
         _ts_corr(panel.open * 0.00817205 + vwap * 0.99182795, _ts_sum(_adv(panel, 60), 9), 6)
     )
     right = _cs_rank(panel.open - _ts_min(panel.open, 14))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha066(panel: Panel) -> pd.DataFrame:
@@ -596,14 +632,14 @@ def alpha068(panel: Panel) -> pd.DataFrame:
     """((ts_rank(correlation(rank(high), rank(adv15), 9), 14) < rank(delta((close*0.518371 + low*0.481629), 1))) * -1)"""
     left = _ts_rank(_ts_corr(_cs_rank(panel.high), _cs_rank(_adv(panel, 15)), 9), 14)
     right = _cs_rank(_delta(panel.close * 0.518371 + panel.low * 0.481629, 1))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha071(panel: Panel) -> pd.DataFrame:
     """((ts_rank(correlation(close, sum(adv20, 9), 15), 15) < rank((ts_rank(close, 3) * ts_rank(ts_rank(adv180, 12), 4)))) * -1)"""
     left = _ts_rank(_ts_corr(panel.close, _ts_sum(_adv(panel, 20), 9), 15), 15)
     right = _cs_rank(_ts_rank(panel.close, 3) * _ts_rank(_ts_rank(_adv(panel, 180), 12), 4))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha072(panel: Panel) -> pd.DataFrame:
@@ -630,14 +666,14 @@ def alpha073(panel: Panel) -> pd.DataFrame:
         ),
         12,
     )
-    return -(first.where(first > second, second))
+    return -_max(first, second)
 
 
 def alpha074(panel: Panel) -> pd.DataFrame:
     """((rank(correlation(close, sum(adv30, 37), 15)) < rank(correlation(rank(((high+low)/2)), rank(adv15), 9))) * -1)"""
     left = _cs_rank(_ts_corr(panel.close, _ts_sum(_adv(panel, 30), 37), 15))
     right = _cs_rank(_ts_corr(_cs_rank((panel.high + panel.low) / 2), _cs_rank(_adv(panel, 15)), 9))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha075(panel: Panel) -> pd.DataFrame:
@@ -645,7 +681,7 @@ def alpha075(panel: Panel) -> pd.DataFrame:
     vwap = _vwap(panel)
     left = _cs_rank(_ts_corr(vwap, panel.volume, 4))
     right = _cs_rank(_ts_corr(_cs_rank(panel.low), _cs_rank(_adv(panel, 50)), 12))
-    return pd.DataFrame(np.where(left < right, 1.0, -1.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, 1.0, -1.0)
 
 
 def alpha077(panel: Panel) -> pd.DataFrame:
@@ -655,7 +691,7 @@ def alpha077(panel: Panel) -> pd.DataFrame:
         _decay_linear(((panel.high + panel.low) / 2 + panel.high) - (vwap + panel.high), 20)
     )
     second = _cs_rank(_decay_linear(_ts_corr((panel.high + panel.low) / 2, _adv(panel, 40), 3), 6))
-    return first.where(first < second, second)
+    return _min(first, second)
 
 
 def alpha078(panel: Panel) -> pd.DataFrame:
@@ -676,7 +712,7 @@ def alpha081(panel: Panel) -> pd.DataFrame:
     inner = _cs_rank(_ts_corr(vwap, _ts_sum(_adv(panel, 10), 50), 8)) ** 4
     left = _cs_rank(cast(pd.DataFrame, np.log(_ts_product(_cs_rank(inner), 15))))
     right = _cs_rank(_ts_corr(_cs_rank(vwap), _cs_rank(panel.volume), 5))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha083(panel: Panel) -> pd.DataFrame:
@@ -700,7 +736,7 @@ def alpha085(panel: Panel) -> pd.DataFrame:
     right = _cs_rank(
         _ts_corr(_ts_rank((panel.high + panel.low) / 2, 4), _ts_rank(panel.volume, 10), 7)
     )
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha086(panel: Panel) -> pd.DataFrame:
@@ -708,7 +744,7 @@ def alpha086(panel: Panel) -> pd.DataFrame:
     vwap = _vwap(panel)
     left = _ts_rank(_ts_corr(panel.close, _ts_sum(_adv(panel, 20), 15), 6), 20)
     right = _cs_rank((panel.open + panel.close) - (vwap + panel.open))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha088(panel: Panel) -> pd.DataFrame:
@@ -723,21 +759,24 @@ def alpha088(panel: Panel) -> pd.DataFrame:
     second = _ts_rank(
         _decay_linear(_ts_corr(_ts_rank(panel.close, 8), _ts_rank(_adv(panel, 60), 21), 8), 7), 3
     )
-    return first.where(first < second, second)
+    return _min(first, second)
 
 
 def alpha092(panel: Panel) -> pd.DataFrame:
     """min(ts_rank(decay_linear(((((high + low) / 2) + close) < (low + open)), 15), 19), ts_rank(decay_linear(correlation(rank(low), rank(adv30), 8), 7), 7))"""
     first = _ts_rank(
         _decay_linear(
-            ((panel.high + panel.low) / 2 + panel.close < panel.low + panel.open).astype(float), 15
+            ((panel.high + panel.low) / 2 + panel.close < panel.low + panel.open)
+            .astype(float)
+            .where(_valid(panel.open, panel.high, panel.low, panel.close)),
+            15,
         ),
         19,
     )
     second = _ts_rank(
         _decay_linear(_ts_corr(_cs_rank(panel.low), _cs_rank(_adv(panel, 30)), 8), 7), 7
     )
-    return first.where(first < second, second)
+    return _min(first, second)
 
 
 def alpha094(panel: Panel) -> pd.DataFrame:
@@ -745,7 +784,7 @@ def alpha094(panel: Panel) -> pd.DataFrame:
     vwap = _vwap(panel)
     left = _cs_rank(vwap - _ts_min(vwap, 12))
     right = _cs_rank(_ts_corr(_ts_rank(vwap, 20), _ts_rank(_adv(panel, 60), 4), 18))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha095(panel: Panel) -> pd.DataFrame:
@@ -757,7 +796,7 @@ def alpha095(panel: Panel) -> pd.DataFrame:
         ),
         12,
     )
-    return pd.DataFrame(np.where(left < right, 1.0, -1.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, 1.0, -1.0)
 
 
 def alpha098(panel: Panel) -> pd.DataFrame:
@@ -774,7 +813,7 @@ def alpha099(panel: Panel) -> pd.DataFrame:
         _ts_corr(_ts_sum((panel.high + panel.low) / 2, 20), _ts_sum(_adv(panel, 60), 20), 9)
     )
     right = _cs_rank(_ts_corr(panel.low, panel.volume, 6))
-    return pd.DataFrame(np.where(left < right, -1.0, 0.0), index=left.index, columns=left.columns)
+    return _if_less(left, right, -1.0, 0.0)
 
 
 def alpha101(panel: Panel) -> pd.DataFrame:

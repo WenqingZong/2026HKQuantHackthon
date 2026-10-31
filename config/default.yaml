@@ -6,23 +6,30 @@ universe:
   training_tickers: selected_etfs/training_tickers.csv
   # 交易池：按流动性/规模/成本筛出、每个方向只留一只的 ETF
   trading_tickers: selected_etfs/trading_tickers.csv
+  # 含成立日/换策略日期的完整表：多场所拼接时据此裁掉 ticker 被复用之前的行情（如 IBIT 2024-01 之前）
+  training_universe: selected_etfs/training_universe.csv
+  trading_universe: selected_etfs/trading_universe.csv
 
 data:
-  # EQUS.SUMMARY 是合并全市场成交后的官方日线汇总（每个代码每天一条记录），
-  # 覆盖 2024-07-01 起。若需要更长的历史，可换成 EQUS.MINI / DBEQ.BASIC，
-  # 代价是成交量只包含部分交易场所（见 README「数据选型」）。
-  # EQUS.MINI 的价格是合并后的完整行情，2023-03-28 起；成交量只是部分场所的采样
-  # （约为合并成交量的 3–8%，且比例随时间漂移），但比率类因子对整体缩放不敏感
-  dataset: EQUS.MINI
+  # 行情来源二选一：
+  # 1) venues 非空：用各交易所自己的数据集拼日线（hkq/venues.py），2018-05 起，历史最长；
+  #    开收盘取上市交易所的官方竞价价，最高最低取常规时段小时线，成交量为各交易所显性成交之和
+  # 2) venues 为空：直接下载 dataset 指定的单个数据集。EQUS.SUMMARY 是官方合并日线但 2024-07 才开始，
+  #    EQUS.MINI 2023-03 起、成交量只有部分场所（约 3–8%）
+  venues: [ARCX.PILLAR, BATS.PITCH, EDGX.PITCH, XNAS.ITCH, XNYS.PILLAR]
+  # 只有这几家是 ETF 的上市交易所，官方开收盘竞价价从它们的 statistics 里取
+  auction_venues: [ARCX.PILLAR, XNAS.ITCH, BATS.PITCH]
+  venue_dir: data/raw/venues # 各交易所原始文件；已存在的不会重新下载（不会重复扣费）
+  dataset: EQUS.SUMMARY
   schema: ohlcv-1d
-  start: "2023-03-28"
+  start: "2018-05-01"
   end: null # null 表示取数据集可用的最后一个交易日
   output: data/raw/bars_daily.parquet
-  # 分红/拆股记录（yfinance，download 阶段一起拉）。原始价必须复权后再算因子和回测
-  corporate_actions: data/raw/corporate_actions.parquet
+  # 分红/拆股记录（yfinance）。原始价必须复权后再算因子和回测。
+  # 存的是 yfinance 原样的数值（分红被之后的拆股追溯调整过），load_actions 读入时换算回当时的实际派息
+  corporate_actions: data/raw/venues/corporate_actions.parquet
 
 dataset:
-  # 选中实现的 Alpha101 因子（只依赖日频 OHLCV 的那一批）
   # 186 个因子 = 78 个 Alpha101 + 111 个 Alpha158 - 3 组重复各去掉一个
   # （alpha033≡-KMID、alpha101≡KMID2、alpha054≡-KSFT2，保留 Alpha101 那一侧）
   alphas:
@@ -216,13 +223,16 @@ dataset:
   label_lag: 1 # 因子用到当日收盘价，最早下一个交易日才能成交，标签相应后移 1 天
   label_norm: rank # 标签横截面标准化：rank / zscore / none。rank 等于把回归变成排序，与 top-k 选股一致
   normalize: rank # rank = 按日做横截面百分位标准化；zscore = 按日均值方差标准化
-  min_history: 20 # 因子预热所需的交易日数，这段数据不参与训练
+  # 预热期：不能短于任何一个因子的回看（最长的是 alpha019/039 的 sum(returns, 250)），否则 build_dataset 直接报错。
+  # 按标的各自计算：晚上市的 ETF 也要攒够 250 根 K 线才进入数据集
+  min_history: 250
   output: data/processed/features.parquet
 
 split:
-  train: ["2023-05-01", "2025-06-30"]
-  valid: ["2025-07-01", "2026-01-31"]
-  test: ["2026-02-01", "2026-10-27"]
+  # 行情 2018-05 起，250 天预热后样本从 2019-05 开始
+  train: ["2019-05-01", "2022-12-31"]
+  valid: ["2023-01-01", "2023-12-31"]
+  test: ["2024-01-01", "2026-10-27"]
 
 train:
   seed: 42
@@ -231,31 +241,37 @@ train:
   artifacts: artifacts
 
 models:
-  # 下面的参数是 scripts/sweep_models.py 在验证集 ICIR 上选出来的（测试集只看不选）
-  xgboost:
-    n_estimators: 1500
-    learning_rate: 0.03
-    max_depth: 5
-    min_child_weight: 100
-    subsample: 0.8
-    colsample_bytree: 0.6
-    reg_lambda: 2.0
-  lightgbm:
-    n_estimators: 900
-    learning_rate: 0.03
-    num_leaves: 31
-    min_child_samples: 200
+  # 下面的参数是 scripts/sweep_models.py 在验证集（2023 年）ICIR 上选出来的，限定在「全部 186 个因子」
+  # 这一个因子集里（流水线一次只用一个因子集）；测试集只记录、不参与选择。各因子集的完整结果见
+  # artifacts/sweep/。注意 LightGBM 的 subsample 要配 subsample_freq > 0 才生效，网格里没开，等于没有行采样。
+  # n_jobs：WSL 上用满全部线程（-1）时 LightGBM 会慢 20 倍（线程争用），8 线程最快
+  xgboost: # xgb_d7
+    n_jobs: 8
+    n_estimators: 2500
+    learning_rate: 0.02
+    max_depth: 7
+    min_child_weight: 300
     subsample: 0.7
-    colsample_bytree: 0.5
-    reg_lambda: 3.0
-  mlp:
-    hidden: [2048, 1024, 512]
-    dropout: 0.4
-    lr: 0.0003
-    weight_decay: 0.01
+    colsample_bytree: 0.4
+    reg_lambda: 5.0
+  lightgbm: # lgb_l127
+    n_jobs: 8
+    n_estimators: 3000
+    learning_rate: 0.015
+    num_leaves: 127
+    min_child_samples: 500
+    subsample: 0.6
+    colsample_bytree: 0.3
+    reg_lambda: 10.0
+  mlp: # mlp_64_slow。大网络（[2048, 1024, 512] 等）在第 1 个 epoch 验证集就最优，之后全是过拟合
+    hidden: [64]
+    dropout: 0.3
+    lr: 0.0001
+    weight_decay: 0.001
     batch_size: 4096
-    max_epochs: 500
-    patience: 50
+    max_epochs: 300
+    patience: 30
+    threads: 8
 
 backtest:
   top_k: 10 # 每次调仓等权买入预测排名前 k 只

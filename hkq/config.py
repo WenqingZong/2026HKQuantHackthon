@@ -26,6 +26,7 @@ KNOWN_MODEL_PARAMS: dict[str, frozenset[str]] = {
             "reg_lambda",
             "reg_alpha",
             "gamma",
+            "n_jobs",
         }
     ),
     "lightgbm": frozenset(
@@ -41,6 +42,7 @@ KNOWN_MODEL_PARAMS: dict[str, frozenset[str]] = {
             "reg_lambda",
             "reg_alpha",
             "min_split_gain",
+            "n_jobs",
         }
     ),
     "mlp": frozenset(
@@ -53,6 +55,8 @@ KNOWN_MODEL_PARAMS: dict[str, frozenset[str]] = {
             "max_epochs",
             "patience",
             "device",
+            "threads",
+            "stop_on",
         }
     ),
 }
@@ -82,10 +86,17 @@ def _path(value: str | Path) -> Path:
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
+def _optional_path(value: str | Path | None) -> Path | None:
+    return None if value is None else _path(value)
+
+
 @dataclass(frozen=True)
 class UniverseConfig:
     training_tickers: Path
     trading_tickers: Path
+    # 含上市/换策略日期的完整表；多场所拼接时用来裁掉 ticker 复用之前的行情
+    training_universe: Path | None
+    trading_universe: Path | None
 
 
 @dataclass(frozen=True)
@@ -96,6 +107,10 @@ class DataConfig:
     end: str | None
     output: Path
     corporate_actions: Path
+    # 非空时改走「各交易所原始数据拼日线」（hkq/venues.py），dataset 字段不再使用
+    venues: tuple[str, ...]
+    auction_venues: tuple[str, ...]
+    venue_dir: Path
 
 
 @dataclass(frozen=True)
@@ -154,6 +169,8 @@ class Config:
             universe=UniverseConfig(
                 training_tickers=_path(raw["universe"]["training_tickers"]),
                 trading_tickers=_path(raw["universe"]["trading_tickers"]),
+                training_universe=_optional_path(raw["universe"].get("training_universe")),
+                trading_universe=_optional_path(raw["universe"].get("trading_universe")),
             ),
             data=DataConfig(
                 dataset=raw["data"]["dataset"],
@@ -162,6 +179,9 @@ class Config:
                 end=None if raw["data"]["end"] is None else str(raw["data"]["end"]),
                 output=_path(raw["data"]["output"]),
                 corporate_actions=_path(raw["data"]["corporate_actions"]),
+                venues=tuple(raw["data"].get("venues") or ()),
+                auction_venues=tuple(raw["data"].get("auction_venues") or ()),
+                venue_dir=_path(raw["data"].get("venue_dir", "data/raw/venues")),
             ),
             dataset=DatasetConfig(
                 alphas=tuple(raw["dataset"]["alphas"]),

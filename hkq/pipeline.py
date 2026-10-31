@@ -17,6 +17,7 @@ from hkq.models import Regressor, build_model
 from hkq.portfolio import BacktestResult, backtest_topk, cost_sensitivity
 from hkq.report import split_summary, write_json, write_model_artifacts, write_report
 from hkq.selection import factor_correlation, select_factors
+from hkq.venues import build_venue_bars, download_venue_files, history_start_dates
 
 logger = logging.getLogger(__name__)
 
@@ -28,25 +29,77 @@ def run_download(cfg: Config) -> pd.DataFrame:
     symbols = sorted(set(training) | set(trading))
     logger.info(f"[download] training={len(training)} trading={len(trading)} union={len(symbols)}")
 
-    bars = download_bars(
-        dataset=cfg.data.dataset,
-        schema=cfg.data.schema,
-        symbols=symbols,
-        start=cfg.data.start,
-        end=cfg.data.end,
-        output=cfg.data.output,
-    )
+    if cfg.data.venues:
+        bars = _download_venue_bars(cfg, symbols)
+    else:
+        bars = download_bars(
+            dataset=cfg.data.dataset,
+            schema=cfg.data.schema,
+            symbols=symbols,
+            start=cfg.data.start,
+            end=cfg.data.end,
+            output=cfg.data.output,
+        )
     logger.info(
         f"[download] symbols={bars['symbol'].nunique()} rows={len(bars):,} "
         f"range={bars['date'].min().date()} -> {bars['date'].max().date()}"
     )
 
-    download_actions(
+    if cfg.data.venues and cfg.data.corporate_actions.exists():
+        # yfinance 经常限流，部分返回会覆盖掉一份完整的表；要刷新就先删文件
+        logger.info(f"[actions] reuse {cfg.data.corporate_actions}")
+    else:
+        download_actions(
+            symbols=symbols,
+            start=cfg.data.start,
+            end=str((bars["date"].max() + pd.Timedelta(days=1)).date()),
+            output=cfg.data.corporate_actions,
+        )
+    return bars
+
+
+def _download_venue_bars(cfg: Config, symbols: list[str]) -> pd.DataFrame:
+    """各交易所原始数据（已下载的直接复用）-> 合成日线 -> 落盘，并记录各环节的计数。"""
+    download_venue_files(
+        venues=cfg.data.venues,
+        auction_venues=cfg.data.auction_venues,
         symbols=symbols,
         start=cfg.data.start,
-        end=str((bars["date"].max() + pd.Timedelta(days=1)).date()),
-        output=cfg.data.corporate_actions,
+        end=cfg.data.end,
+        directory=cfg.data.venue_dir,
     )
+    history_start = None
+    if cfg.universe.training_universe and cfg.universe.trading_universe:
+        history_start = history_start_dates(
+            cfg.universe.training_universe, cfg.universe.trading_universe
+        )
+    bars, counts = build_venue_bars(
+        cfg.data.venue_dir,
+        venues=cfg.data.venues,
+        auction_venues=cfg.data.auction_venues,
+        history_start=history_start,
+    )
+    bars = bars[bars["date"] >= pd.Timestamp(cfg.data.start)]
+    if cfg.data.end is not None:
+        bars = bars[bars["date"] <= pd.Timestamp(cfg.data.end)]
+
+    cfg.data.output.parent.mkdir(parents=True, exist_ok=True)
+    bars.to_parquet(cfg.data.output, index=False)
+    write_json(
+        cfg.data.output.with_suffix(".manifest.json"),
+        {
+            "source": "venues",
+            "venues": list(cfg.data.venues),
+            "auction_venues": list(cfg.data.auction_venues),
+            "start": cfg.data.start,
+            "end": cfg.data.end,
+            "n_symbols_requested": len(symbols),
+            "n_symbols_returned": int(bars["symbol"].nunique()),
+            "date_range": [str(bars["date"].min().date()), str(bars["date"].max().date())],
+            **counts,
+        },
+    )
+    logger.info(f"[venues] {counts} -> {cfg.data.output}")
     return bars
 
 
@@ -297,10 +350,7 @@ def _backtest(predictions: pd.DataFrame, returns: pd.DataFrame, cfg: Config) -> 
 
 
 def _adjusted_panel(cfg: Config) -> Panel:
-    """因果复权后的行情，回测的日收益从这里取（收益率与归一化方式无关）。
-
-    特征的复权走 dataset 里的 point-in-time 窗口，两者口径不同但收益率完全一致。
-    """
+    """因果复权后的行情，回测的日收益从这里取；和 build_dataset 里算因子、标签用的是同一份。"""
     return adjust_panel(load_panel(cfg.data.output), load_actions(cfg.data.corporate_actions))
 
 

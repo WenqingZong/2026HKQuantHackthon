@@ -33,7 +33,9 @@ def build_dataset(
     actions: 分红/拆股长表，字段 date / symbol / dividend / split_ratio。
     horizon: 标签是未来多少个交易日的收益，应与调仓周期一致。
     normalize: 横截面标准化的方式，rank 为百分位排名（默认），zscore 为标准化。
-    min_history: 因子最长回看天数；PIT 滚动窗取 min_history + 5，所以实际预热期比它多几天。
+    min_history: 预热期，必须不小于所有因子里最长的回看天数（否则会直接报错）。
+        每只标的从**自己**的第 min_history 根有效 K 线起才进入数据集，晚上市的 ETF 也一样，
+        这样不会出现「一半特征还没算出来、被填成 0」的样本。
     label_lag: 因子用当日收盘价算出来，最早只能下一个交易日成交，标签因此后移的天数。
     label_norm: 标签的横截面标准化方式。选股只关心同一天的相对强弱，
         去掉市场整体涨跌（beta）之后模型更容易学到真正有用的排序信号。
@@ -44,7 +46,14 @@ def build_dataset(
         raise ValueError(f"min_history={min_history} 超过了数据长度 {len(panel.dates)}")
 
     adjusted = adjust_panel(panel, actions)
-    frames = compute_alphas(adjusted, alphas)
+    trading = adjusted.close.notna()
+    # 当天没有行情的标的（未上市、已退市、缺数据）不允许带着因子值参与横截面排名：
+    # 有些因子在输入缺失时仍会吐出数值，会把别的标的的 rank 挤歪
+    frames = {
+        name: frame.reindex(index=trading.index, columns=trading.columns).where(trading)
+        for name, frame in compute_alphas(adjusted, alphas).items()
+    }
+    _check_warmup(frames, trading, min_history)
     frames[LABEL] = _normalize_label(
         forward_return(adjusted.close, horizon=horizon, lag=label_lag), label_norm
     )
@@ -52,8 +61,9 @@ def build_dataset(
     data = pd.concat([_to_long(frame, name) for name, frame in frames.items()], axis=1)
     data = data.replace([np.inf, -np.inf], np.nan).sort_index()
 
-    # 因子有回看窗口，前 min_history 个交易日只有半截数据，直接裁掉
-    data = data[data.index.get_level_values("date") >= panel.dates[min_history]]
+    # 预热期按标的各自计算：第 min_history 根有效 K 线（从 0 数）之前的样本直接裁掉
+    seasoned = _to_long(trading.cumsum().where(trading) > min_history, "seasoned")
+    data = data[seasoned.reindex(data.index, fill_value=False).to_numpy()]
 
     features = feature_columns(data)
     grouped = data.groupby(level="date")[features]
@@ -66,6 +76,40 @@ def build_dataset(
     data[features] = data[features].fillna(0.0)
     data = data.dropna(subset=[LABEL])
     return data.sort_index()
+
+
+def factor_warmup(frame: pd.DataFrame, trading: pd.DataFrame) -> int | None:
+    """因子从标的上市到第一次有值需要的交易日数（取各标的里最短的那个）。
+
+    用「各标的里最短」而不是日历上的第一天，是为了不被晚上市的 ETF 拉长；全程没有值返回 None。
+    """
+    has_value = frame.notna().to_numpy()
+    listed = trading.to_numpy()
+    covered = has_value.any(axis=0) & listed.any(axis=0)
+    if not covered.any():
+        return None
+    first_value = has_value.argmax(axis=0)[covered]
+    first_listed = listed.argmax(axis=0)[covered]
+    return int((first_value - first_listed).min())
+
+
+def _check_warmup(frames: dict[str, pd.DataFrame], trading: pd.DataFrame, min_history: int) -> None:
+    """预热期比因子回看短，训练集开头的样本就会是「半截因子 + 填 0」，和测试集分布不一致。"""
+    too_long: dict[str, int] = {}
+    empty: list[str] = []
+    for name, frame in frames.items():
+        warmup = factor_warmup(frame, trading)
+        if warmup is None:
+            empty.append(name)
+        elif warmup > min_history:
+            too_long[name] = warmup
+    if empty:
+        raise ValueError(f"这些因子在整个样本里都算不出值：{empty}")
+    if too_long:
+        raise ValueError(
+            f"min_history={min_history} 短于这些因子的预热期 {too_long}；"
+            f"把 dataset.min_history 调到 {max(too_long.values())} 以上，或者去掉这些因子"
+        )
 
 
 def _normalize_label(label: pd.DataFrame, method: str) -> pd.DataFrame:

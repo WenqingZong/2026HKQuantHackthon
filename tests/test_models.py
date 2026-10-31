@@ -45,3 +45,25 @@ def test_mlp_logs_early_stop(caplog: pytest.LogCaptureFixture) -> None:
         model.fit(X, np.ones(64), X, -np.ones(64))
 
     assert any("MLP early stop" in record.message for record in caplog.records)
+
+
+def test_mlp_corr_early_stop_keeps_the_best_ranking_epoch() -> None:
+    # 训练标签和 x0 正相关、验证标签和 x0 负相关：越训练验证集相关性越差，应该保留最早那一轮
+    rng = np.random.default_rng(1)
+    X = rng.normal(size=(256, 3))
+    model = MLPModel(
+        hidden=(8,), lr=5e-2, max_epochs=40, patience=3, device="cpu", stop_on="corr", seed=0
+    )
+
+    model.fit(X, X[:, 0], X, -X[:, 0])
+
+    late = MLPModel(hidden=(8,), lr=5e-2, max_epochs=40, patience=40, device="cpu", seed=0)
+    late.fit(X, X[:, 0])
+    corr_kept = np.corrcoef(model.predict(X), -X[:, 0])[0, 1]
+    corr_late = np.corrcoef(late.predict(X), -X[:, 0])[0, 1]
+    assert corr_kept > corr_late
+
+
+def test_mlp_rejects_unknown_stop_metric() -> None:
+    with pytest.raises(ValueError, match="stop_on"):
+        MLPModel(hidden=(4,), stop_on="ic", device="cpu").fit(np.zeros((8, 2)), np.zeros(8))

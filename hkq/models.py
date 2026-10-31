@@ -94,13 +94,14 @@ class LightGBMModel:
         X_valid: np.ndarray | None = None,
         y_valid: np.ndarray | None = None,
     ) -> None:
-        self._model = LGBMRegressor(
-            objective="regression",
-            random_state=self.seed,
-            n_jobs=-1,
-            verbose=-1,
+        params = {
+            "objective": "regression",
+            "random_state": self.seed,
+            "n_jobs": -1,
+            "verbose": -1,
             **self.params,
-        )
+        }
+        self._model = LGBMRegressor(**params)
         if X_valid is None or y_valid is None:
             self._model.fit(X, y)
         else:
@@ -121,7 +122,12 @@ class LightGBMModel:
 
 @dataclass
 class MLPModel:
-    """多层感知机回归器（PyTorch），按验证集损失做早停。"""
+    """多层感知机回归器（PyTorch），在验证集上早停。
+
+    stop_on 选早停看的指标：mse（默认）或 corr（预测与标签的相关系数，越大越好）。
+    5 日收益的信噪比极低，IC 0.03 对应的 R² 只有 0.001 量级，验证集 MSE 几乎不动、
+    早停点接近随机；corr 直接盯排序能力，更贴近「按预测值选前 k 只」的用法。
+    """
 
     hidden: tuple[int, ...] = (128, 64)
     dropout: float = 0.2
@@ -132,6 +138,8 @@ class MLPModel:
     patience: int = 30
     seed: int = 42
     device: str = "auto"
+    threads: int | None = None  # CPU 线程数；None 用 torch 默认（全部核），WSL 上反而更慢
+    stop_on: str = "mse"
     _net: nn.Module | None = field(default=None, init=False, repr=False)
 
     def _resolve_device(self) -> torch.device:
@@ -155,7 +163,11 @@ class MLPModel:
         X_valid: np.ndarray | None = None,
         y_valid: np.ndarray | None = None,
     ) -> None:
+        if self.stop_on not in {"mse", "corr"}:
+            raise ValueError(f"stop_on 只能是 mse 或 corr，收到 {self.stop_on}")
         torch.manual_seed(self.seed)
+        if self.threads is not None:
+            torch.set_num_threads(self.threads)
         device = self._resolve_device()
 
         self._net = self._build_net(X.shape[1]).to(device)
@@ -188,7 +200,15 @@ class MLPModel:
 
             self._net.eval()
             with torch.no_grad():
-                valid_loss = float(loss_fn(self._net(x_valid), y_valid_t))
+                valid_output = self._net(x_valid)
+                if self.stop_on == "corr":
+                    # 取负号，统一成「越小越好」
+                    stacked = torch.stack([valid_output.view(-1), y_valid_t.view(-1)])
+                    valid_loss = -float(torch.corrcoef(stacked)[0, 1].nan_to_num(0.0))
+                else:
+                    valid_loss = float(loss_fn(valid_output, y_valid_t))
+            if (epoch + 1) % 10 == 0:
+                logger.info(f"  MLP epoch {epoch + 1}: valid {self.stop_on} {valid_loss:+.6f}")
             if valid_loss < best_loss - 1e-9:
                 best_loss, bad_epochs = valid_loss, 0
                 best_state = copy.deepcopy(self._net.state_dict())
@@ -196,7 +216,8 @@ class MLPModel:
                 bad_epochs += 1
                 if bad_epochs >= self.patience:
                     logger.info(
-                        f"  MLP early stop at epoch {epoch + 1} (valid MSE {best_loss:.6f})"
+                        f"  MLP early stop at epoch {epoch + 1} "
+                        f"(valid {self.stop_on} {best_loss:+.6f})"
                     )
                     break
 

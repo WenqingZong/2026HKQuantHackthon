@@ -210,8 +210,11 @@ def _all_features(panel: Panel) -> dict[str, pd.DataFrame]:
             cast(pd.DataFrame, np.log(volume / volume.shift(1) + 1.0))
         )
 
-        up = (change > 0).astype(float).rolling(window, min_periods=window).mean()
-        down = (change < 0).astype(float).rolling(window, min_periods=window).mean()
+        # 布尔比较会把缺失变成 False（0），未上市/缺数据的日子必须保持缺失，不能记成「没涨」
+        up = (change > 0).astype(float).where(change.notna())
+        down = (change < 0).astype(float).where(change.notna())
+        up = up.rolling(window, min_periods=window).mean()
+        down = down.rolling(window, min_periods=window).mean()
         features["CNTP" + suffix] = up
         features["CNTN" + suffix] = down
         features["CNTD" + suffix] = up - down

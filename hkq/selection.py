@@ -11,7 +11,7 @@ from typing import cast
 import numpy as np
 import pandas as pd
 
-# 两段各自的门槛。训练集 226 天、验证集 148 天，样本都不长，只能是启发式
+# 两段各自的门槛，只是启发式（ICIR 的标准误约为 1/sqrt(交易日数)）
 MIN_ABS_ICIR_TRAIN = 0.08
 MIN_ABS_ICIR_VALID = 0.05
 # 两只因子日均相关系数超过这个数就当成同一个信号，只留分数高的那只

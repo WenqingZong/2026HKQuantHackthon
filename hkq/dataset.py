@@ -22,6 +22,7 @@ def build_dataset(
     min_history: int = 20,
     label_lag: int = 1,
     label_norm: str = "rank",
+    drop_unlabeled: bool = True,
 ) -> pd.DataFrame:
     """计算因子和前瞻收益，返回以 (date, symbol) 为索引的长表。
 
@@ -39,6 +40,8 @@ def build_dataset(
     label_lag: 因子用当日收盘价算出来，最早只能下一个交易日成交，标签因此后移的天数。
     label_norm: 标签的横截面标准化方式。选股只关心同一天的相对强弱，
         去掉市场整体涨跌（beta）之后模型更容易学到真正有用的排序信号。
+    drop_unlabeled: 默认丢掉标签缺失的行（最后 label_lag + horizon 天还看不到未来收益）。
+        出实盘/模拟盘信号时设为 False，保留最新几天的因子，这些行的标签是 NaN。
     """
     if normalize not in {"rank", "zscore"}:
         raise ValueError(f"不支持的 normalize 方式：{normalize}")
@@ -74,7 +77,8 @@ def build_dataset(
 
     # 缺失（历史不足、停牌）统一给中性值 0，树模型和 MLP 都能直接吃
     data[features] = data[features].fillna(0.0)
-    data = data.dropna(subset=[LABEL])
+    if drop_unlabeled:
+        data = data.dropna(subset=[LABEL])
     return data.sort_index()
 
 

@@ -58,6 +58,25 @@ def test_build_dataset_is_nan_free(panel_factory: PanelFactory, no_actions: pd.D
     assert data[LABEL].notna().all()
 
 
+def test_build_dataset_can_keep_unlabeled_latest_dates(
+    panel_factory: PanelFactory, no_actions: pd.DataFrame
+) -> None:
+    """出信号要用到最新几天：保留下来的行特征和默认口径完全一致，只是标签为空。"""
+    panel = panel_factory()
+    alphas = ["alpha101", "alpha012"]
+    labeled = build_dataset(panel, no_actions, alphas=alphas, horizon=2, min_history=5)
+    full = build_dataset(
+        panel, no_actions, alphas=alphas, horizon=2, min_history=5, drop_unlabeled=False
+    )
+
+    extra = full.index.difference(labeled.index)
+    extra_dates = extra.get_level_values("date").unique()
+    assert list(extra_dates) == list(panel.dates[-3:])  # label_lag 1 + horizon 2
+    assert full.loc[extra, LABEL].isna().all()
+    assert not full[feature_columns(full)].isna().any().any()
+    pd.testing.assert_frame_equal(full.loc[labeled.index], labeled)
+
+
 def test_split_by_date_stays_inside_windows(
     panel_factory: PanelFactory, no_actions: pd.DataFrame
 ) -> None:

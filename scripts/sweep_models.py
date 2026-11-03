@@ -12,6 +12,8 @@
 
 结果逐行追加到 artifacts/sweep/<out>，中断后重跑会跳过已经跑完的组合；
 每个组合的验证集 / 测试集预测存在 artifacts/sweep/predictions/。
+换标签周期等设置时用 --config 指定另一份配置、--tag 把结果放进 artifacts/sweep/<tag>/，
+不同设置的结果互不覆盖。
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from hkq.alpha158 import ALPHA158_NAMES
-from hkq.config import Config
+from hkq.config import DEFAULT_CONFIG, Config
 from hkq.corporate_actions import adjust_panel, load_actions
 from hkq.data import load_panel
 from hkq.dataset import LABEL, feature_columns, split_by_date
@@ -328,12 +330,14 @@ def main() -> None:
     parser.add_argument("--configs", default=None, help="逗号分隔的网格名，默认该模型的全部")
     parser.add_argument("--threads", type=int, default=8)
     parser.add_argument("--out", default="sweep.csv")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="配置文件路径")
+    parser.add_argument("--tag", default="", help="结果子目录名，默认直接放在 artifacts/sweep/")
     args = parser.parse_args()
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S"
     )
 
-    cfg = Config.load()
+    cfg = Config.load(args.config)
     data = pd.read_parquet(cfg.dataset.output)
     splits = split_by_date(data, cfg.split.ranges())
     train, valid, test = splits["train"], splits["valid"], splits["test"]
@@ -342,7 +346,7 @@ def main() -> None:
         load_panel(cfg.data.output), load_actions(cfg.data.corporate_actions)
     ).close.pct_change(fill_method=None)
 
-    out_dir = cfg.train.artifacts / "sweep"
+    out_dir = cfg.train.artifacts / "sweep" / args.tag
     (out_dir / "predictions").mkdir(parents=True, exist_ok=True)
     sets = factor_sets(train, features)
     (out_dir / "factor_sets.json").write_text(

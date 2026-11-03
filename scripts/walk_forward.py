@@ -14,7 +14,8 @@
     uv run python scripts/walk_forward.py --models lightgbm --factor-set top30 \\
         --params '{"num_leaves": 63}' --first-year 2024 --tag lgb_top30
 
---factor-set 取自 sweep_models.py 写出的 artifacts/sweep/factor_sets.json。那些子集是用主切分的
+--factor-set 取自 sweep_models.py 写出的 artifacts/sweep/<sweep-tag>/factor_sets.json。
+换标签周期 / 调仓周期时用 --config 指定另一份配置。那些子集是用主切分的
 训练集（2019-05 ~ 2022-12）选出来的，配置又是在 2023 年的验证集上挑的，所以只有 2024 年及之后的
 测试年对这类配置是干净的样本外。
 
@@ -35,7 +36,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from hkq.config import Config
+from hkq.config import DEFAULT_CONFIG, Config
 from hkq.corporate_actions import adjust_panel, load_actions
 from hkq.data import load_panel
 from hkq.dataset import LABEL, feature_columns
@@ -98,16 +99,19 @@ def main() -> None:
     parser.add_argument("--factor-set", default="all", help="factor_sets.json 里的名字")
     parser.add_argument("--params", default="{}", help="JSON，覆盖 config 里该模型的参数")
     parser.add_argument("--tag", default="", help="结果子目录名，默认 walk_forward")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="配置文件路径")
+    parser.add_argument("--sweep-tag", default="", help="factor_sets.json 所在的 sweep 子目录")
     args = parser.parse_args()
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S"
     )
 
-    cfg = Config.load()
+    cfg = Config.load(args.config)
     data = pd.read_parquet(cfg.dataset.output)
     features = feature_columns(data)
     if args.factor_set != "all":
-        sets = json.loads((cfg.train.artifacts / "sweep" / "factor_sets.json").read_text("utf-8"))
+        sets_file = cfg.train.artifacts / "sweep" / args.sweep_tag / "factor_sets.json"
+        sets = json.loads(sets_file.read_text("utf-8"))
         features = sets[args.factor_set]
     overrides = json.loads(args.params)
     purge = cfg.dataset.label_lag + cfg.dataset.horizon

@@ -18,11 +18,11 @@
   "n_symbols_returned": 182,
   "date_range": [
     "2018-05-01",
-    "2026-10-28"
+    "2026-10-30"
   ],
-  "open_fallback": 3615,
-  "close_fallback": 11235,
+  "open_fallback": 3617,
+  "close_fallback": 11237,
   "high_low_fallback": 44,
   "rows_before_history_start": 1339,
-  "rows": 364176
+  "rows": 364540
 }

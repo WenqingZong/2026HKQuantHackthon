@@ -1,0 +1,78 @@
+{
+ "signal_date": "2026-10-30",
+ "execution": "close, 1 trading day(s) after signal_date (backtest rule)",
+ "rebalance_days": 10,
+ "next_signal_date": "signal_date + 10 trading days",
+ "label_horizon_days": 5,
+ "top_k": 10,
+ "capital_for_sizing": 1000000.0,
+ "train_range": [
+  "2019-04-30",
+  "2025-10-14"
+ ],
+ "valid_range": [
+  "2025-10-23",
+  "2026-10-22"
+ ],
+ "purge_days": 6,
+ "n_symbols_ranked": 176,
+ "data_last_date": "2026-10-30",
+ "sweep": "/home/wenqing/Projects/2026HKQuantHackthon/artifacts/sweep/h5",
+ "git_commit": "980c824",
+ "models": {
+  "xgboost": {
+   "run": "xgboost|xgb_d7|all",
+   "factor_set": "all",
+   "n_factors": 186,
+   "params": {
+    "n_estimators": 2500,
+    "learning_rate": 0.02,
+    "max_depth": 7,
+    "min_child_weight": 300,
+    "subsample": 0.7,
+    "colsample_bytree": 0.4,
+    "reg_lambda": 5.0
+   },
+   "sweep_valid_icir_2023": 0.20399721254421127,
+   "refit_valid_ic": 0.03694015491276731,
+   "refit_valid_icir": 0.14762903478982478
+  },
+  "lightgbm": {
+   "run": "lightgbm|lgb_l255|dedup",
+   "factor_set": "dedup",
+   "n_factors": 154,
+   "params": {
+    "n_estimators": 4000,
+    "learning_rate": 0.01,
+    "num_leaves": 255,
+    "min_child_samples": 800,
+    "subsample": 0.6,
+    "colsample_bytree": 0.25,
+    "reg_lambda": 20.0
+   },
+   "sweep_valid_icir_2023": 0.19010704904671724,
+   "refit_valid_ic": 0.0377728144226406,
+   "refit_valid_icir": 0.14697482485572622
+  },
+  "mlp": {
+   "run": "mlp|mlp_64_corr|top30",
+   "factor_set": "top30",
+   "n_factors": 30,
+   "params": {
+    "hidden": [
+     64
+    ],
+    "dropout": 0.3,
+    "lr": 0.0001,
+    "weight_decay": 0.001,
+    "batch_size": 4096,
+    "max_epochs": 300,
+    "patience": 20,
+    "stop_on": "corr"
+   },
+   "sweep_valid_icir_2023": 0.15937305924835887,
+   "refit_valid_ic": 0.039345281633309935,
+   "refit_valid_icir": 0.14731246171623905
+  }
+ }
+}

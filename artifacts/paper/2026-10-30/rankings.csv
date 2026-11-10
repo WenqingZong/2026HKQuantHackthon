@@ -1,0 +1,529 @@
+signal_date,model,model_config,factor_set,symbol,name,asset_class,score,rank,percentile,close_price_raw
+2026-10-30,lightgbm,lgb_l255,dedup,SOXX,iShares Semiconductor ETF,股票,0.0362701,1,1,471.51
+2026-10-30,lightgbm,lgb_l255,dedup,QTUM,Defiance Quantum ETF,股票,0.0357838,2,0.994318,133.83
+2026-10-30,lightgbm,lgb_l255,dedup,SIL,Global X Silver Miners ETF,股票,0.0339408,3,0.988636,71.25
+2026-10-30,lightgbm,lgb_l255,dedup,SLV,iShares Silver Trust,商品,0.0296367,4,0.982955,44.6
+2026-10-30,lightgbm,lgb_l255,dedup,XLK,State Street Technology Select Sector SPDR ETF,股票,0.0293758,5,0.977273,179.51
+2026-10-30,lightgbm,lgb_l255,dedup,IEMG,iShares Core MSCI Emerging Markets ETF,股票,0.0283935,6,0.971591,74.25
+2026-10-30,lightgbm,lgb_l255,dedup,EIDO,iShares MSCI Indonesia ETF,股票,0.0256123,7,0.965909,9.96
+2026-10-30,lightgbm,lgb_l255,dedup,COPX,Global X Copper Miners ETF,股票,0.0253501,8,0.960227,71.96
+2026-10-30,lightgbm,lgb_l255,dedup,EMXC,iShares MSCI Emerging Markets ex China ETF,股票,0.0240804,9,0.954545,89.7
+2026-10-30,lightgbm,lgb_l255,dedup,LIT,Global X Lithium & Battery Tech ETF,股票,0.0240456,10,0.948864,59.81
+2026-10-30,lightgbm,lgb_l255,dedup,EWT,iShares MSCI Taiwan ETF,股票,0.0235313,11,0.943182,101.11
+2026-10-30,lightgbm,lgb_l255,dedup,MTUM,iShares MSCI USA Momentum Factor ETF,股票,0.0233434,12,0.9375,284.1
+2026-10-30,lightgbm,lgb_l255,dedup,QQQ,Invesco QQQ Trust Series I,股票,0.0229103,13,0.931818,690.49
+2026-10-30,lightgbm,lgb_l255,dedup,AIQ,Global X Artificial Intelligence & Technology ETF,股票,0.0227155,14,0.926136,60.14
+2026-10-30,lightgbm,lgb_l255,dedup,EWY,iShares MSCI South Korea ETF,股票,0.0215461,15,0.920455,152.89
+2026-10-30,lightgbm,lgb_l255,dedup,ECH,iShares MSCI Chile ETF,股票,0.0201887,16,0.914773,34.73
+2026-10-30,lightgbm,lgb_l255,dedup,DTCR,Global X Data Center And Digital Infrastructure ETF,股票,0.0198471,17,0.909091,25.57
+2026-10-30,lightgbm,lgb_l255,dedup,TUR,iShares MSCI Turkey ETF,股票,0.0195422,18,0.903409,29.53
+2026-10-30,lightgbm,lgb_l255,dedup,GRID,First Trust Nasdaq Clean Edge Smart GRID Infrastructure Index,股票,0.0186875,19,0.897727,164.51
+2026-10-30,lightgbm,lgb_l255,dedup,EWL,iShares MSCI Switzerland ETF,股票,0.0186815,20,0.892045,64.37
+2026-10-30,lightgbm,lgb_l255,dedup,PALL,abrdn Physical Palladium Shares ETF,商品,0.0180811,21,0.886364,17.78
+2026-10-30,lightgbm,lgb_l255,dedup,GDX,VanEck Gold Miners ETF,股票,0.0180284,22,0.880682,77.09
+2026-10-30,lightgbm,lgb_l255,dedup,AAXJ,iShares MSCI All Country Asia ex Japan ETF,股票,0.0179022,23,0.875,106.17
+2026-10-30,lightgbm,lgb_l255,dedup,GLD,SPDR Gold Shares,商品,0.0175718,24,0.869318,355.78
+2026-10-30,lightgbm,lgb_l255,dedup,ROBO,ROBO Global Robotics & Automation Index ETF,股票,0.0175276,25,0.863636,74.62
+2026-10-30,lightgbm,lgb_l255,dedup,XME,State Street SPDR S&P Metals & Mining ETF,股票,0.0174651,26,0.857955,97.82
+2026-10-30,lightgbm,lgb_l255,dedup,AVDV,Avantis International Small Cap Value ETF,股票,0.0172471,27,0.852273,105.11
+2026-10-30,lightgbm,lgb_l255,dedup,EWS,iShares MSCI Singapore ETF,股票,0.0171981,28,0.846591,30.63
+2026-10-30,lightgbm,lgb_l255,dedup,PPLT,abrdn Physical Platinum Shares ETF,商品,0.0167919,29,0.840909,13.01
+2026-10-30,lightgbm,lgb_l255,dedup,IHF,iShares U.S. Healthcare Providers ETF,股票,0.016756,30,0.835227,59.94
+2026-10-30,lightgbm,lgb_l255,dedup,PHO,Invesco Water Resources ETF,股票,0.0162813,31,0.829545,73.76
+2026-10-30,lightgbm,lgb_l255,dedup,KIE,State Street SPDR S&P Insurance ETF,股票,0.0158259,32,0.823864,63.7
+2026-10-30,lightgbm,lgb_l255,dedup,KWEB,KraneShares CSI China Internet ETF,股票,0.0156149,33,0.818182,22.74
+2026-10-30,lightgbm,lgb_l255,dedup,FDN,First Trust Dow Jones Internet Index Fund,股票,0.0155982,34,0.8125,266.23
+2026-10-30,lightgbm,lgb_l255,dedup,THD,iShares MSCI Thailand ETF,股票,0.015383,35,0.806818,68.46
+2026-10-30,lightgbm,lgb_l255,dedup,EWC,iShares MSCI Canada ETF,股票,0.0153799,36,0.801136,60.62
+2026-10-30,lightgbm,lgb_l255,dedup,VEA,Vanguard FTSE Developed Markets ETF,股票,0.0141376,37,0.795455,69.44
+2026-10-30,lightgbm,lgb_l255,dedup,IHI,iShares U.S. Medical Devices ETF,股票,0.0141257,38,0.789773,54.59
+2026-10-30,lightgbm,lgb_l255,dedup,KRE,State Street SPDR S&P Regional Banking ETF,股票,0.0138016,39,0.784091,72.01
+2026-10-30,lightgbm,lgb_l255,dedup,EWN,iShares MSCI Netherlands ETF,股票,0.0137504,40,0.778409,64.33
+2026-10-30,lightgbm,lgb_l255,dedup,EWW,iShares MSCI Mexico ETF,股票,0.0136391,41,0.772727,74.47
+2026-10-30,lightgbm,lgb_l255,dedup,OIH,VanEck Oil Services ETF,股票,0.0132802,42,0.767045,411.57
+2026-10-30,lightgbm,lgb_l255,dedup,XLF,State Street Financial Select Sector SPDR ETF,股票,0.0128925,43,0.761364,56.51
+2026-10-30,lightgbm,lgb_l255,dedup,EDV,Vanguard Extended Duration Treasury ETF,债券,0.0128077,44,0.755682,59.27
+2026-10-30,lightgbm,lgb_l255,dedup,BLOK,Amplify Blockchain Technology ETF,股票,0.0124607,45,0.75,51.25
+2026-10-30,lightgbm,lgb_l255,dedup,XOP,State Street SPDR S&P Oil & Gas Exploration & Production ETF,股票,0.0124577,46,0.744318,203.76
+2026-10-30,lightgbm,lgb_l255,dedup,SPY,State Street SPDR S&P 500 ETF,股票,0.0123205,47,0.738636,755.72
+2026-10-30,lightgbm,lgb_l255,dedup,DBA,Invesco DB Agriculture Fund,商品,0.0117467,48,0.732955,26.89
+2026-10-30,lightgbm,lgb_l255,dedup,MSOS,AdvisorShares Pure US Cannabis ETF,股票,0.0115525,49,0.727273,3.94
+2026-10-30,lightgbm,lgb_l255,dedup,PPH,VanEck Pharmaceutical ETF,股票,0.0113563,50,0.721591,119.33
+2026-10-30,lightgbm,lgb_l255,dedup,XLE,State Street Energy Select Sector SPDR ETF,股票,0.011233,51,0.715909,70.02
+2026-10-30,lightgbm,lgb_l255,dedup,IDMO,Invesco S&P International Developed Momentum ETF,股票,0.0112257,52,0.710227,58.01
+2026-10-30,lightgbm,lgb_l255,dedup,IWP,iShares Russell Mid-Cap Growth ETF,股票,0.0110223,53,0.704545,131.64
+2026-10-30,lightgbm,lgb_l255,dedup,ARKK,ARK Innovation ETF,股票,0.0108521,54,0.698864,80.75
+2026-10-30,lightgbm,lgb_l255,dedup,SKYY,First Trust Cloud Computing ETF,股票,0.0103788,55,0.693182,159.77
+2026-10-30,lightgbm,lgb_l255,dedup,CPER,United States Copper Index Fund,商品,0.0103457,56,0.6875,38.99
+2026-10-30,lightgbm,lgb_l255,dedup,SCHD,Schwab US Dividend Equity ETF,股票,0.010094,57,0.681818,35.78
+2026-10-30,lightgbm,lgb_l255,dedup,VIG,Vanguard Dividend Appreciation ETF,股票,0.00987071,58,0.676136,247.76
+2026-10-30,lightgbm,lgb_l255,dedup,ARGT,Global X MSCI Argentina ETF,股票,0.00985858,59,0.670455,79.18
+2026-10-30,lightgbm,lgb_l255,dedup,IWN,iShares Russell 2000 Value ETF,股票,0.00959656,60,0.664773,214.58
+2026-10-30,lightgbm,lgb_l255,dedup,EWJ,iShares MSCI Japan ETF,股票,0.00944663,61,0.659091,92.91
+2026-10-30,lightgbm,lgb_l255,dedup,COWZ,Pacer US Cash Cows 100 ETF,股票,0.00944564,62,0.653409,71.37
+2026-10-30,lightgbm,lgb_l255,dedup,XLC,State Street Communication Services Select Sector SPDR ETF,股票,0.00941594,63,0.647727,99.9
+2026-10-30,lightgbm,lgb_l255,dedup,ICVT,iShares Convertible Bond ETF,债券,0.00937884,64,0.642045,105.17
+2026-10-30,lightgbm,lgb_l255,dedup,ASHR,Xtrackers Harvest CSI 300 China A-Shares ETF,股票,0.00933247,65,0.636364,30.04
+2026-10-30,lightgbm,lgb_l255,dedup,UFO,Procure Space ETF,股票,0.00905043,66,0.630682,40.24
+2026-10-30,lightgbm,lgb_l255,dedup,PFF,iShares Preferred & Income Securities ETF,债券,0.00904285,67,0.625,28.47
+2026-10-30,lightgbm,lgb_l255,dedup,CRAK,VanEck Oil Refiners ETF,股票,0.00902714,68,0.619318,62.16
+2026-10-30,lightgbm,lgb_l255,dedup,IGV,iShares Expanded Tech-Software Sector ETF,股票,0.0087114,69,0.613636,104.29
+2026-10-30,lightgbm,lgb_l255,dedup,AVUV,Avantis U.S. Small Cap Value ETF,股票,0.00816942,70,0.607955,123.43
+2026-10-30,lightgbm,lgb_l255,dedup,IWS,iShares Russell Mid-Cap Value ETF,股票,0.00815422,71,0.602273,170.07
+2026-10-30,lightgbm,lgb_l255,dedup,XLU,State Street Utilities Select Sector SPDR ETF,股票,0.00804331,72,0.596591,43.43
+2026-10-30,lightgbm,lgb_l255,dedup,EWA,iShares MSCI Australia ETF,股票,0.00781739,73,0.590909,29.54
+2026-10-30,lightgbm,lgb_l255,dedup,XLV,State Street Health Care Select Sector SPDR ETF,股票,0.00761933,74,0.585227,184.87
+2026-10-30,lightgbm,lgb_l255,dedup,VYMI,Vanguard International High Dividend Yield ETF,股票,0.00761406,75,0.579545,101.4
+2026-10-30,lightgbm,lgb_l255,dedup,MOAT,VanEck Morningstar Wide Moat ETF,股票,0.00757393,76,0.573864,112.38
+2026-10-30,lightgbm,lgb_l255,dedup,EWP,iShares MSCI Spain ETF,股票,0.0075615,77,0.568182,56.33
+2026-10-30,lightgbm,lgb_l255,dedup,XLI,State Street Industrial Select Sector SPDR ETF,股票,0.00751243,78,0.5625,167.4
+2026-10-30,lightgbm,lgb_l255,dedup,EPOL,iShares MSCI Poland ETF,股票,0.00723234,79,0.556818,43.4
+2026-10-30,lightgbm,lgb_l255,dedup,ICLN,iShares Global Clean Energy ETF,股票,0.00718346,80,0.551136,15.31
+2026-10-30,lightgbm,lgb_l255,dedup,CIBR,First Trust NASDAQ Cybersecurity ETF,股票,0.00700527,81,0.545455,101.03
+2026-10-30,lightgbm,lgb_l255,dedup,AMLP,Alerian MLP ETF,股票,0.00694179,82,0.539773,54.06
+2026-10-30,lightgbm,lgb_l255,dedup,SCZ,iShares MSCI EAFE Small-Cap ETF,股票,0.00656726,83,0.534091,82.75
+2026-10-30,lightgbm,lgb_l255,dedup,VNQI,Vanguard Global ex-U.S. Real Estate ETF,房地产,0.00654125,84,0.528409,42.7
+2026-10-30,lightgbm,lgb_l255,dedup,EIS,iShares MSCI Israel ETF,股票,0.00648339,85,0.522727,115.25
+2026-10-30,lightgbm,lgb_l255,dedup,VGK,Vanguard FTSE Europe ETF,股票,0.00640048,86,0.517045,87.54
+2026-10-30,lightgbm,lgb_l255,dedup,IWC,iShares Micro-Cap ETF,股票,0.00637811,87,0.511364,178.18
+2026-10-30,lightgbm,lgb_l255,dedup,ETHA,iShares Ethereum Trust ETF,数字资产,0.00635391,88,0.505682,50.42
+2026-10-30,lightgbm,lgb_l255,dedup,BOTZ,Global X Robotics & Artificial Intelligence ETF,股票,0.00615785,89,0.5,32.22
+2026-10-30,lightgbm,lgb_l255,dedup,EZA,iShares MSCI South Africa ETF,股票,0.0061279,90,0.494318,61.78
+2026-10-30,lightgbm,lgb_l255,dedup,XRT,State Street SPDR S&P Retail ETF,股票,0.00571661,91,0.488636,88.72
+2026-10-30,lightgbm,lgb_l255,dedup,KSA,iShares MSCI Saudi Arabia ETF,股票,0.00546479,92,0.482955,34.22
+2026-10-30,lightgbm,lgb_l255,dedup,PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF,商品,0.00546296,93,0.477273,20.02
+2026-10-30,lightgbm,lgb_l255,dedup,EFV,iShares MSCI EAFE Value ETF,股票,0.00545888,94,0.471591,79.26
+2026-10-30,lightgbm,lgb_l255,dedup,TAN,Invesco Solar ETF,股票,0.00513693,95,0.465909,40.2
+2026-10-30,lightgbm,lgb_l255,dedup,MCHI,iShares MSCI China ETF,股票,0.00512627,96,0.460227,49.07
+2026-10-30,lightgbm,lgb_l255,dedup,USO,United States Oil Fund LP,商品,0.00490638,97,0.454545,168.83
+2026-10-30,lightgbm,lgb_l255,dedup,PAVE,Global X U.S. Infrastructure Development ETF,股票,0.00468218,98,0.448864,53.52
+2026-10-30,lightgbm,lgb_l255,dedup,MOO,VanEck Agribusiness ETF,股票,0.00407848,99,0.443182,81.98
+2026-10-30,lightgbm,lgb_l255,dedup,RSP,Invesco S&P 500 Equal Weight ETF,股票,0.00388432,100,0.4375,218.31
+2026-10-30,lightgbm,lgb_l255,dedup,VNM,VanEck Vietnam ETF,股票,0.00343959,101,0.431818,16.645
+2026-10-30,lightgbm,lgb_l255,dedup,IWM,iShares Russell 2000 ETF,股票,0.00337493,102,0.426136,279.33
+2026-10-30,lightgbm,lgb_l255,dedup,XLY,State Street Consumer Discretionary Select Sector SPDR ETF,股票,0.0029585,103,0.420455,115.38
+2026-10-30,lightgbm,lgb_l255,dedup,IYT,iShares US Transportation ETF,股票,0.00266444,104,0.414773,81.61
+2026-10-30,lightgbm,lgb_l255,dedup,EWU,iShares MSCI United Kingdom ETF,股票,0.00237829,105,0.409091,47.83
+2026-10-30,lightgbm,lgb_l255,dedup,ILF,iShares Latin America 40 ETF,股票,0.00233173,106,0.403409,32.13
+2026-10-30,lightgbm,lgb_l255,dedup,KCE,State Street SPDR S&P Capital Markets ETF,股票,0.00232866,107,0.397727,154.33
+2026-10-30,lightgbm,lgb_l255,dedup,XLP,State Street Consumer Staples Select Sector SPDR ETF,股票,0.00232438,108,0.392045,89.42
+2026-10-30,lightgbm,lgb_l255,dedup,BOAT,SonicShares Global Shipping ETF,股票,0.00230161,109,0.386364,53.13
+2026-10-30,lightgbm,lgb_l255,dedup,NLR,VanEck Uranium and Nuclear ETF,股票,0.00209508,110,0.380682,91.75
+2026-10-30,lightgbm,lgb_l255,dedup,TLT,iShares 20+ Year Treasury Bond ETF,债券,0.00194142,111,0.375,81.84
+2026-10-30,lightgbm,lgb_l255,dedup,EWD,iShares MSCI Sweden ETF,股票,0.0017724,112,0.369318,52.16
+2026-10-30,lightgbm,lgb_l255,dedup,VTV,Vanguard Morningstar Value ETF,股票,0.00170049,113,0.363636,228.02
+2026-10-30,lightgbm,lgb_l255,dedup,EWM,iShares MSCI Malaysia ETF,股票,0.00147157,114,0.357955,26.87
+2026-10-30,lightgbm,lgb_l255,dedup,IJH,iShares Core S&P Mid-Cap ETF,股票,0.00144409,115,0.352273,73.33
+2026-10-30,lightgbm,lgb_l255,dedup,TLH,iShares 10-20 Year Treasury Bond ETF,债券,0.00135874,116,0.346591,96.06
+2026-10-30,lightgbm,lgb_l255,dedup,FNDC,Schwab Fundamental International Small Equity ETF,股票,0.00122708,117,0.340909,48.94
+2026-10-30,lightgbm,lgb_l255,dedup,VCLT,Vanguard Long-Term Corporate Bond ETF,债券,0.00108801,118,0.335227,70.63
+2026-10-30,lightgbm,lgb_l255,dedup,EFG,iShares MSCI EAFE Growth ETF,股票,0.000843391,119,0.329545,118.55
+2026-10-30,lightgbm,lgb_l255,dedup,EWH,iShares MSCI Hong Kong ETF,股票,0.000644837,120,0.323864,22.52
+2026-10-30,lightgbm,lgb_l255,dedup,XBI,State Street SPDR S&P Biotech ETF,股票,0.000553416,121,0.318182,155.98
+2026-10-30,lightgbm,lgb_l255,dedup,REMX,VanEck Rare Earth and Strategic Metals ETF,股票,0.000333247,122,0.3125,49.99
+2026-10-30,lightgbm,lgb_l255,dedup,EWI,iShares MSCI Italy ETF,股票,0.000312953,123,0.306818,55.87
+2026-10-30,lightgbm,lgb_l255,dedup,VNQ,Vanguard Real Estate ETF,房地产,-0.00046491,124,0.301136,93.94
+2026-10-30,lightgbm,lgb_l255,dedup,IWO,iShares Russell 2000 Growth ETF,股票,-0.000542409,125,0.295455,351.75
+2026-10-30,lightgbm,lgb_l255,dedup,EFAV,iShares MSCI EAFE Min Vol Factor ETF,股票,-0.00130762,126,0.289773,96.25
+2026-10-30,lightgbm,lgb_l255,dedup,SJNK,State Street SPDR Bloomberg Short Term High Yield Bond ETF,债券,-0.00170379,127,0.284091,24.16
+2026-10-30,lightgbm,lgb_l255,dedup,URA,Global X Uranium ETF,股票,-0.00190583,128,0.278409,33.73
+2026-10-30,lightgbm,lgb_l255,dedup,EWQ,iShares MSCI France ETF,股票,-0.00207479,129,0.272727,42.24
+2026-10-30,lightgbm,lgb_l255,dedup,EWG,iShares MSCI Germany ETF,股票,-0.0022171,130,0.267045,41.88
+2026-10-30,lightgbm,lgb_l255,dedup,EWZ,iShares MSCI Brazil ETF,股票,-0.00277583,131,0.261364,32.46
+2026-10-30,lightgbm,lgb_l255,dedup,XLB,State Street Materials Select Sector SPDR ETF,股票,-0.0028196,132,0.255682,52.74
+2026-10-30,lightgbm,lgb_l255,dedup,ITB,iShares U.S. Home Construction ETF,股票,-0.00329415,133,0.25,92.74
+2026-10-30,lightgbm,lgb_l255,dedup,IBIT,iShares Bitcoin Trust ETF,数字资产,-0.00344952,134,0.244318,43.36
+2026-10-30,lightgbm,lgb_l255,dedup,IQLT,iShares MSCI Intl Quality Factor ETF,股票,-0.00367827,135,0.238636,50.41
+2026-10-30,lightgbm,lgb_l255,dedup,JETS,U.S. Global Jets ETF,股票,-0.00367925,136,0.232955,26.93
+2026-10-30,lightgbm,lgb_l255,dedup,EMLC,VanEck J. P. Morgan EM Local Currency Bond ETF,债券,-0.00470246,137,0.227273,24.57
+2026-10-30,lightgbm,lgb_l255,dedup,HYD,VanEck High Yield Muni ETF,债券,-0.00534779,138,0.221591,49.64
+2026-10-30,lightgbm,lgb_l255,dedup,IGF,iShares Global Infrastructure ETF,股票,-0.00585162,139,0.215909,65.8
+2026-10-30,lightgbm,lgb_l255,dedup,FXE,Invesco CurrencyShares Euro Trust,外汇,-0.00603388,140,0.210227,103.11
+2026-10-30,lightgbm,lgb_l255,dedup,INDA,iShares MSCI India ETF,股票,-0.0062493,141,0.204545,47.72
+2026-10-30,lightgbm,lgb_l255,dedup,UGA,United States Gasoline Fund LP,商品,-0.00637018,142,0.198864,144.6
+2026-10-30,lightgbm,lgb_l255,dedup,MUB,iShares National Muni Bond ETF,债券,-0.00674429,143,0.193182,104.18
+2026-10-30,lightgbm,lgb_l255,dedup,EMB,iShares JP Morgan USD Emerging Markets Bond ETF,债券,-0.00763791,144,0.1875,92.05
+2026-10-30,lightgbm,lgb_l255,dedup,QUAL,iShares MSCI USA Quality Factor ETF,股票,-0.00801895,145,0.181818,222.49
+2026-10-30,lightgbm,lgb_l255,dedup,BSOL,Bitwise Solana Staking ETF,数字资产,-0.00823492,146,0.176136,13.05
+2026-10-30,lightgbm,lgb_l255,dedup,FXF,Invesco CurrencyShares Swiss Franc Trust,外汇,-0.00833055,147,0.170455,106.79
+2026-10-30,lightgbm,lgb_l255,dedup,BKLN,Invesco Senior Loan ETF,债券,-0.00988015,148,0.164773,20.43
+2026-10-30,lightgbm,lgb_l255,dedup,ITA,iShares U.S. Aerospace & Defense ETF,股票,-0.0104494,149,0.159091,209.74
+2026-10-30,lightgbm,lgb_l255,dedup,ARKG,ARK Genomic Revolution ETF,股票,-0.0104723,150,0.153409,51.4
+2026-10-30,lightgbm,lgb_l255,dedup,SCHP,Schwab US TIPS ETF,债券,-0.0109477,151,0.147727,25.74
+2026-10-30,lightgbm,lgb_l255,dedup,BNDX,Vanguard Total International Bond ETF,债券,-0.0114226,152,0.142045,47.39
+2026-10-30,lightgbm,lgb_l255,dedup,JAAA,Janus Henderson AAA CLO ETF,债券,-0.0125949,153,0.136364,50.44
+2026-10-30,lightgbm,lgb_l255,dedup,LQD,iShares iBoxx $ Investment Grade Corporate Bond ETF,债券,-0.0131499,154,0.130682,104.27
+2026-10-30,lightgbm,lgb_l255,dedup,HYG,iShares iBoxx $ High Yield Corporate Bond ETF,债券,-0.0143551,155,0.125,77.43
+2026-10-30,lightgbm,lgb_l255,dedup,BITO,ProShares Bitcoin ETF,数字资产,-0.0144194,156,0.119318,10.23
+2026-10-30,lightgbm,lgb_l255,dedup,IEF,iShares 7-10 Year Treasury Bond ETF,债券,-0.0145883,157,0.113636,91.76
+2026-10-30,lightgbm,lgb_l255,dedup,MBB,iShares MBS ETF,债券,-0.0151964,158,0.107955,92.05
+2026-10-30,lightgbm,lgb_l255,dedup,SGOV,iShares 0-3 Month Treasury Bond ETF,债券,-0.0152196,159,0.102273,100.735
+2026-10-30,lightgbm,lgb_l255,dedup,UUP,Invesco DB US Dollar Index Bullish Fund,外汇,-0.0159107,160,0.0965909,29
+2026-10-30,lightgbm,lgb_l255,dedup,USMV,iShares MSCI USA Min Vol Factor ETF,股票,-0.0163829,161,0.0909091,102.93
+2026-10-30,lightgbm,lgb_l255,dedup,UNG,United States Natural Gas Fund LP,商品,-0.0172766,162,0.0852273,9.08
+2026-10-30,lightgbm,lgb_l255,dedup,FLOT,iShares Floating Rate Bond ETF,债券,-0.0186894,163,0.0795455,51.01
+2026-10-30,lightgbm,lgb_l255,dedup,JPST,JPMorgan Ultra-Short Income ETF,债券,-0.0205406,164,0.0738636,50.43
+2026-10-30,lightgbm,lgb_l255,dedup,CMBS,iShares CMBS ETF,债券,-0.0215702,165,0.0681818,47.64
+2026-10-30,lightgbm,lgb_l255,dedup,BIL,State Street SPDR Bloomberg 1-3 Month T-Bill ETF,债券,-0.021714,166,0.0625,91.7
+2026-10-30,lightgbm,lgb_l255,dedup,FXY,Invesco Currencyshares Japanese Yen Trust,外汇,-0.0220505,167,0.0568182,58.19
+2026-10-30,lightgbm,lgb_l255,dedup,SUB,iShares Short-Term National Muni Bond ETF,债券,-0.0228106,168,0.0511364,106.06
+2026-10-30,lightgbm,lgb_l255,dedup,VCSH,Vanguard Short-Term Corporate Bond ETF,债券,-0.0229784,169,0.0454545,77.89
+2026-10-30,lightgbm,lgb_l255,dedup,IEI,iShares 3-7 Year Treasury Bond ETF,债券,-0.0270865,170,0.0397727,115.33
+2026-10-30,lightgbm,lgb_l255,dedup,FXB,Invesco CurrencyShares British Pound Sterling Trust,外汇,-0.0271958,171,0.0340909,128.9
+2026-10-30,lightgbm,lgb_l255,dedup,USFR,WisdomTree Floating Rate Treasury Fund,债券,-0.0305083,172,0.0284091,50.4
+2026-10-30,lightgbm,lgb_l255,dedup,MINT,PIMCO Enhanced Short Maturity Active Exchange-Traded Fund,债券,-0.0307735,173,0.0227273,100.74
+2026-10-30,lightgbm,lgb_l255,dedup,AGG,iShares Core U.S. Aggregate Bond ETF,债券,-0.0309331,174,0.0170455,96.36
+2026-10-30,lightgbm,lgb_l255,dedup,VTIP,Vanguard Short-Term Inflation-Protected Securities ETF,债券,-0.033657,175,0.0113636,48.99
+2026-10-30,lightgbm,lgb_l255,dedup,VGSH,Vanguard Short-Term Treasury ETF,债券,-0.0387719,176,0.00568182,57.93
+2026-10-30,mlp,mlp_64_corr,top30,IHI,iShares U.S. Medical Devices ETF,股票,0.0405762,1,1,54.59
+2026-10-30,mlp,mlp_64_corr,top30,EIDO,iShares MSCI Indonesia ETF,股票,0.0373946,2,0.994318,9.96
+2026-10-30,mlp,mlp_64_corr,top30,GRID,First Trust Nasdaq Clean Edge Smart GRID Infrastructure Index,股票,0.0369861,3,0.988636,164.51
+2026-10-30,mlp,mlp_64_corr,top30,CRAK,VanEck Oil Refiners ETF,股票,0.036359,4,0.982955,62.16
+2026-10-30,mlp,mlp_64_corr,top30,EWC,iShares MSCI Canada ETF,股票,0.0349951,5,0.977273,60.62
+2026-10-30,mlp,mlp_64_corr,top30,XOP,State Street SPDR S&P Oil & Gas Exploration & Production ETF,股票,0.0342835,6,0.971591,203.76
+2026-10-30,mlp,mlp_64_corr,top30,IEMG,iShares Core MSCI Emerging Markets ETF,股票,0.0342436,7,0.965909,74.25
+2026-10-30,mlp,mlp_64_corr,top30,QQQ,Invesco QQQ Trust Series I,股票,0.0341495,8,0.960227,690.49
+2026-10-30,mlp,mlp_64_corr,top30,QTUM,Defiance Quantum ETF,股票,0.0338739,9,0.954545,133.83
+2026-10-30,mlp,mlp_64_corr,top30,SOXX,iShares Semiconductor ETF,股票,0.0323401,10,0.948864,471.51
+2026-10-30,mlp,mlp_64_corr,top30,TUR,iShares MSCI Turkey ETF,股票,0.0322472,11,0.943182,29.53
+2026-10-30,mlp,mlp_64_corr,top30,IHF,iShares U.S. Healthcare Providers ETF,股票,0.0311688,12,0.9375,59.94
+2026-10-30,mlp,mlp_64_corr,top30,EMXC,iShares MSCI Emerging Markets ex China ETF,股票,0.0308144,13,0.931818,89.7
+2026-10-30,mlp,mlp_64_corr,top30,AIQ,Global X Artificial Intelligence & Technology ETF,股票,0.0300949,14,0.926136,60.14
+2026-10-30,mlp,mlp_64_corr,top30,DTCR,Global X Data Center And Digital Infrastructure ETF,股票,0.029061,15,0.920455,25.57
+2026-10-30,mlp,mlp_64_corr,top30,IWP,iShares Russell Mid-Cap Growth ETF,股票,0.0284248,16,0.914773,131.64
+2026-10-30,mlp,mlp_64_corr,top30,PAVE,Global X U.S. Infrastructure Development ETF,股票,0.0277659,17,0.909091,53.52
+2026-10-30,mlp,mlp_64_corr,top30,EWT,iShares MSCI Taiwan ETF,股票,0.027564,18,0.903409,101.11
+2026-10-30,mlp,mlp_64_corr,top30,KRE,State Street SPDR S&P Regional Banking ETF,股票,0.027039,19,0.897727,72.01
+2026-10-30,mlp,mlp_64_corr,top30,GLD,SPDR Gold Shares,商品,0.0264086,20,0.892045,355.78
+2026-10-30,mlp,mlp_64_corr,top30,EDV,Vanguard Extended Duration Treasury ETF,债券,0.0255974,21,0.886364,59.27
+2026-10-30,mlp,mlp_64_corr,top30,XLK,State Street Technology Select Sector SPDR ETF,股票,0.0252997,22,0.880682,179.51
+2026-10-30,mlp,mlp_64_corr,top30,PPLT,abrdn Physical Platinum Shares ETF,商品,0.0252086,23,0.875,13.01
+2026-10-30,mlp,mlp_64_corr,top30,MTUM,iShares MSCI USA Momentum Factor ETF,股票,0.0246057,24,0.869318,284.1
+2026-10-30,mlp,mlp_64_corr,top30,SIL,Global X Silver Miners ETF,股票,0.0245938,25,0.863636,71.25
+2026-10-30,mlp,mlp_64_corr,top30,XLF,State Street Financial Select Sector SPDR ETF,股票,0.0238127,26,0.857955,56.51
+2026-10-30,mlp,mlp_64_corr,top30,OIH,VanEck Oil Services ETF,股票,0.0236267,27,0.852273,411.57
+2026-10-30,mlp,mlp_64_corr,top30,GDX,VanEck Gold Miners ETF,股票,0.0230182,28,0.846591,77.09
+2026-10-30,mlp,mlp_64_corr,top30,ROBO,ROBO Global Robotics & Automation Index ETF,股票,0.0228651,29,0.840909,74.62
+2026-10-30,mlp,mlp_64_corr,top30,COWZ,Pacer US Cash Cows 100 ETF,股票,0.0222323,30,0.835227,71.37
+2026-10-30,mlp,mlp_64_corr,top30,EWZ,iShares MSCI Brazil ETF,股票,0.0216396,31,0.829545,32.46
+2026-10-30,mlp,mlp_64_corr,top30,IWN,iShares Russell 2000 Value ETF,股票,0.0216164,32,0.823864,214.58
+2026-10-30,mlp,mlp_64_corr,top30,VTV,Vanguard Morningstar Value ETF,股票,0.0213859,33,0.818182,228.02
+2026-10-30,mlp,mlp_64_corr,top30,ARGT,Global X MSCI Argentina ETF,股票,0.0211046,34,0.8125,79.18
+2026-10-30,mlp,mlp_64_corr,top30,EWN,iShares MSCI Netherlands ETF,股票,0.0210372,35,0.806818,64.33
+2026-10-30,mlp,mlp_64_corr,top30,USO,United States Oil Fund LP,商品,0.0208648,36,0.801136,168.83
+2026-10-30,mlp,mlp_64_corr,top30,PALL,abrdn Physical Palladium Shares ETF,商品,0.0202183,37,0.795455,17.78
+2026-10-30,mlp,mlp_64_corr,top30,IWM,iShares Russell 2000 ETF,股票,0.0200248,38,0.789773,279.33
+2026-10-30,mlp,mlp_64_corr,top30,EWY,iShares MSCI South Korea ETF,股票,0.0193225,39,0.784091,152.89
+2026-10-30,mlp,mlp_64_corr,top30,BOTZ,Global X Robotics & Artificial Intelligence ETF,股票,0.0189465,40,0.778409,32.22
+2026-10-30,mlp,mlp_64_corr,top30,URA,Global X Uranium ETF,股票,0.0187072,41,0.772727,33.73
+2026-10-30,mlp,mlp_64_corr,top30,AMLP,Alerian MLP ETF,股票,0.0185295,42,0.767045,54.06
+2026-10-30,mlp,mlp_64_corr,top30,IWC,iShares Micro-Cap ETF,股票,0.017581,43,0.761364,178.18
+2026-10-30,mlp,mlp_64_corr,top30,AVDV,Avantis International Small Cap Value ETF,股票,0.0173242,44,0.755682,105.11
+2026-10-30,mlp,mlp_64_corr,top30,EWA,iShares MSCI Australia ETF,股票,0.0171259,45,0.75,29.54
+2026-10-30,mlp,mlp_64_corr,top30,PHO,Invesco Water Resources ETF,股票,0.0164757,46,0.744318,73.76
+2026-10-30,mlp,mlp_64_corr,top30,CPER,United States Copper Index Fund,商品,0.0160986,47,0.738636,38.99
+2026-10-30,mlp,mlp_64_corr,top30,VNQ,Vanguard Real Estate ETF,房地产,0.015821,48,0.732955,93.94
+2026-10-30,mlp,mlp_64_corr,top30,CIBR,First Trust NASDAQ Cybersecurity ETF,股票,0.0154314,49,0.727273,101.03
+2026-10-30,mlp,mlp_64_corr,top30,EWS,iShares MSCI Singapore ETF,股票,0.0153501,50,0.721591,30.63
+2026-10-30,mlp,mlp_64_corr,top30,ASHR,Xtrackers Harvest CSI 300 China A-Shares ETF,股票,0.0151554,51,0.715909,30.04
+2026-10-30,mlp,mlp_64_corr,top30,COPX,Global X Copper Miners ETF,股票,0.0148455,52,0.710227,71.96
+2026-10-30,mlp,mlp_64_corr,top30,EWI,iShares MSCI Italy ETF,股票,0.0147683,53,0.704545,55.87
+2026-10-30,mlp,mlp_64_corr,top30,XLU,State Street Utilities Select Sector SPDR ETF,股票,0.0145635,54,0.698864,43.43
+2026-10-30,mlp,mlp_64_corr,top30,XLI,State Street Industrial Select Sector SPDR ETF,股票,0.0143081,55,0.693182,167.4
+2026-10-30,mlp,mlp_64_corr,top30,AAXJ,iShares MSCI All Country Asia ex Japan ETF,股票,0.0140919,56,0.6875,106.17
+2026-10-30,mlp,mlp_64_corr,top30,ILF,iShares Latin America 40 ETF,股票,0.0135497,57,0.681818,32.13
+2026-10-30,mlp,mlp_64_corr,top30,ETHA,iShares Ethereum Trust ETF,数字资产,0.0133849,58,0.676136,50.42
+2026-10-30,mlp,mlp_64_corr,top30,BOAT,SonicShares Global Shipping ETF,股票,0.0130675,59,0.670455,53.13
+2026-10-30,mlp,mlp_64_corr,top30,IGV,iShares Expanded Tech-Software Sector ETF,股票,0.0118161,60,0.664773,104.29
+2026-10-30,mlp,mlp_64_corr,top30,IJH,iShares Core S&P Mid-Cap ETF,股票,0.0114932,61,0.659091,73.33
+2026-10-30,mlp,mlp_64_corr,top30,RSP,Invesco S&P 500 Equal Weight ETF,股票,0.011093,62,0.653409,218.31
+2026-10-30,mlp,mlp_64_corr,top30,IWS,iShares Russell Mid-Cap Value ETF,股票,0.0110596,63,0.647727,170.07
+2026-10-30,mlp,mlp_64_corr,top30,FDN,First Trust Dow Jones Internet Index Fund,股票,0.0108759,64,0.642045,266.23
+2026-10-30,mlp,mlp_64_corr,top30,VEA,Vanguard FTSE Developed Markets ETF,股票,0.0102342,65,0.636364,69.44
+2026-10-30,mlp,mlp_64_corr,top30,SPY,State Street SPDR S&P 500 ETF,股票,0.00953189,66,0.630682,755.72
+2026-10-30,mlp,mlp_64_corr,top30,IWO,iShares Russell 2000 Growth ETF,股票,0.00924801,67,0.625,351.75
+2026-10-30,mlp,mlp_64_corr,top30,EWJ,iShares MSCI Japan ETF,股票,0.00906979,68,0.619318,92.91
+2026-10-30,mlp,mlp_64_corr,top30,PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF,商品,0.00869339,69,0.613636,20.02
+2026-10-30,mlp,mlp_64_corr,top30,ICLN,iShares Global Clean Energy ETF,股票,0.00847413,70,0.607955,15.31
+2026-10-30,mlp,mlp_64_corr,top30,UFO,Procure Space ETF,股票,0.00835624,71,0.602273,40.24
+2026-10-30,mlp,mlp_64_corr,top30,IBIT,iShares Bitcoin Trust ETF,数字资产,0.00829507,72,0.596591,43.36
+2026-10-30,mlp,mlp_64_corr,top30,BLOK,Amplify Blockchain Technology ETF,股票,0.00824215,73,0.590909,51.25
+2026-10-30,mlp,mlp_64_corr,top30,SLV,iShares Silver Trust,商品,0.00807044,74,0.585227,44.6
+2026-10-30,mlp,mlp_64_corr,top30,NLR,VanEck Uranium and Nuclear ETF,股票,0.00783408,75,0.579545,91.75
+2026-10-30,mlp,mlp_64_corr,top30,QUAL,iShares MSCI USA Quality Factor ETF,股票,0.00772228,76,0.573864,222.49
+2026-10-30,mlp,mlp_64_corr,top30,DBA,Invesco DB Agriculture Fund,商品,0.00771992,77,0.568182,26.89
+2026-10-30,mlp,mlp_64_corr,top30,EWP,iShares MSCI Spain ETF,股票,0.00766145,78,0.5625,56.33
+2026-10-30,mlp,mlp_64_corr,top30,VIG,Vanguard Dividend Appreciation ETF,股票,0.00765209,79,0.556818,247.76
+2026-10-30,mlp,mlp_64_corr,top30,VNQI,Vanguard Global ex-U.S. Real Estate ETF,房地产,0.00758133,80,0.551136,42.7
+2026-10-30,mlp,mlp_64_corr,top30,USMV,iShares MSCI USA Min Vol Factor ETF,股票,0.00686807,81,0.545455,102.93
+2026-10-30,mlp,mlp_64_corr,top30,MSOS,AdvisorShares Pure US Cannabis ETF,股票,0.00673736,82,0.539773,3.94
+2026-10-30,mlp,mlp_64_corr,top30,TAN,Invesco Solar ETF,股票,0.00653808,83,0.534091,40.2
+2026-10-30,mlp,mlp_64_corr,top30,KSA,iShares MSCI Saudi Arabia ETF,股票,0.00555631,84,0.528409,34.22
+2026-10-30,mlp,mlp_64_corr,top30,AVUV,Avantis U.S. Small Cap Value ETF,股票,0.00510495,85,0.522727,123.43
+2026-10-30,mlp,mlp_64_corr,top30,EWG,iShares MSCI Germany ETF,股票,0.00497976,86,0.517045,41.88
+2026-10-30,mlp,mlp_64_corr,top30,VNM,VanEck Vietnam ETF,股票,0.00490397,87,0.511364,16.645
+2026-10-30,mlp,mlp_64_corr,top30,EPOL,iShares MSCI Poland ETF,股票,0.00459866,88,0.505682,43.4
+2026-10-30,mlp,mlp_64_corr,top30,EWW,iShares MSCI Mexico ETF,股票,0.00419367,89,0.5,74.47
+2026-10-30,mlp,mlp_64_corr,top30,KWEB,KraneShares CSI China Internet ETF,股票,0.00391516,90,0.494318,22.74
+2026-10-30,mlp,mlp_64_corr,top30,VYMI,Vanguard International High Dividend Yield ETF,股票,0.00386204,91,0.488636,101.4
+2026-10-30,mlp,mlp_64_corr,top30,KIE,State Street SPDR S&P Insurance ETF,股票,0.00323224,92,0.482955,63.7
+2026-10-30,mlp,mlp_64_corr,top30,SCZ,iShares MSCI EAFE Small-Cap ETF,股票,0.00315339,93,0.477273,82.75
+2026-10-30,mlp,mlp_64_corr,top30,LIT,Global X Lithium & Battery Tech ETF,股票,0.00303485,94,0.471591,59.81
+2026-10-30,mlp,mlp_64_corr,top30,EFV,iShares MSCI EAFE Value ETF,股票,0.0029897,95,0.465909,79.26
+2026-10-30,mlp,mlp_64_corr,top30,EWM,iShares MSCI Malaysia ETF,股票,0.00275276,96,0.460227,26.87
+2026-10-30,mlp,mlp_64_corr,top30,XLE,State Street Energy Select Sector SPDR ETF,股票,0.00253317,97,0.454545,70.02
+2026-10-30,mlp,mlp_64_corr,top30,VCLT,Vanguard Long-Term Corporate Bond ETF,债券,0.00133313,98,0.448864,70.63
+2026-10-30,mlp,mlp_64_corr,top30,JETS,U.S. Global Jets ETF,股票,0.00102618,99,0.443182,26.93
+2026-10-30,mlp,mlp_64_corr,top30,THD,iShares MSCI Thailand ETF,股票,0.000796884,100,0.4375,68.46
+2026-10-30,mlp,mlp_64_corr,top30,ARKK,ARK Innovation ETF,股票,0.000338733,101,0.431818,80.75
+2026-10-30,mlp,mlp_64_corr,top30,XLC,State Street Communication Services Select Sector SPDR ETF,股票,0.000204377,102,0.426136,99.9
+2026-10-30,mlp,mlp_64_corr,top30,EFAV,iShares MSCI EAFE Min Vol Factor ETF,股票,0.000167966,103,0.420455,96.25
+2026-10-30,mlp,mlp_64_corr,top30,SKYY,First Trust Cloud Computing ETF,股票,-0.000125408,104,0.414773,159.77
+2026-10-30,mlp,mlp_64_corr,top30,MOAT,VanEck Morningstar Wide Moat ETF,股票,-0.000380792,105,0.409091,112.38
+2026-10-30,mlp,mlp_64_corr,top30,EZA,iShares MSCI South Africa ETF,股票,-0.000696041,106,0.403409,61.78
+2026-10-30,mlp,mlp_64_corr,top30,MCHI,iShares MSCI China ETF,股票,-0.00095661,107,0.397727,49.07
+2026-10-30,mlp,mlp_64_corr,top30,XME,State Street SPDR S&P Metals & Mining ETF,股票,-0.0017336,108,0.392045,97.82
+2026-10-30,mlp,mlp_64_corr,top30,ECH,iShares MSCI Chile ETF,股票,-0.00173413,109,0.386364,34.73
+2026-10-30,mlp,mlp_64_corr,top30,PFF,iShares Preferred & Income Securities ETF,债券,-0.00189578,110,0.380682,28.47
+2026-10-30,mlp,mlp_64_corr,top30,FNDC,Schwab Fundamental International Small Equity ETF,股票,-0.00195225,111,0.375,48.94
+2026-10-30,mlp,mlp_64_corr,top30,IDMO,Invesco S&P International Developed Momentum ETF,股票,-0.00198163,112,0.369318,58.01
+2026-10-30,mlp,mlp_64_corr,top30,VGK,Vanguard FTSE Europe ETF,股票,-0.00218944,113,0.363636,87.54
+2026-10-30,mlp,mlp_64_corr,top30,SCHD,Schwab US Dividend Equity ETF,股票,-0.00280098,114,0.357955,35.78
+2026-10-30,mlp,mlp_64_corr,top30,XLV,State Street Health Care Select Sector SPDR ETF,股票,-0.00309139,115,0.352273,184.87
+2026-10-30,mlp,mlp_64_corr,top30,XBI,State Street SPDR S&P Biotech ETF,股票,-0.00377821,116,0.346591,155.98
+2026-10-30,mlp,mlp_64_corr,top30,KCE,State Street SPDR S&P Capital Markets ETF,股票,-0.00408287,117,0.340909,154.33
+2026-10-30,mlp,mlp_64_corr,top30,HYD,VanEck High Yield Muni ETF,债券,-0.00504228,118,0.335227,49.64
+2026-10-30,mlp,mlp_64_corr,top30,MUB,iShares National Muni Bond ETF,债券,-0.00528422,119,0.329545,104.18
+2026-10-30,mlp,mlp_64_corr,top30,BITO,ProShares Bitcoin ETF,数字资产,-0.00551007,120,0.323864,10.23
+2026-10-30,mlp,mlp_64_corr,top30,REMX,VanEck Rare Earth and Strategic Metals ETF,股票,-0.00603685,121,0.318182,49.99
+2026-10-30,mlp,mlp_64_corr,top30,EWH,iShares MSCI Hong Kong ETF,股票,-0.00675412,122,0.3125,22.52
+2026-10-30,mlp,mlp_64_corr,top30,PPH,VanEck Pharmaceutical ETF,股票,-0.00675655,123,0.306818,119.33
+2026-10-30,mlp,mlp_64_corr,top30,MOO,VanEck Agribusiness ETF,股票,-0.00732429,124,0.301136,81.98
+2026-10-30,mlp,mlp_64_corr,top30,EIS,iShares MSCI Israel ETF,股票,-0.00739639,125,0.295455,115.25
+2026-10-30,mlp,mlp_64_corr,top30,XLY,State Street Consumer Discretionary Select Sector SPDR ETF,股票,-0.00865281,126,0.289773,115.38
+2026-10-30,mlp,mlp_64_corr,top30,ICVT,iShares Convertible Bond ETF,债券,-0.00888584,127,0.284091,105.17
+2026-10-30,mlp,mlp_64_corr,top30,INDA,iShares MSCI India ETF,股票,-0.00960696,128,0.278409,47.72
+2026-10-30,mlp,mlp_64_corr,top30,ITA,iShares U.S. Aerospace & Defense ETF,股票,-0.00972621,129,0.272727,209.74
+2026-10-30,mlp,mlp_64_corr,top30,ARKG,ARK Genomic Revolution ETF,股票,-0.00979828,130,0.267045,51.4
+2026-10-30,mlp,mlp_64_corr,top30,EWQ,iShares MSCI France ETF,股票,-0.0100785,131,0.261364,42.24
+2026-10-30,mlp,mlp_64_corr,top30,IGF,iShares Global Infrastructure ETF,股票,-0.0113576,132,0.255682,65.8
+2026-10-30,mlp,mlp_64_corr,top30,EWU,iShares MSCI United Kingdom ETF,股票,-0.0114559,133,0.25,47.83
+2026-10-30,mlp,mlp_64_corr,top30,BSOL,Bitwise Solana Staking ETF,数字资产,-0.0116409,134,0.244318,13.05
+2026-10-30,mlp,mlp_64_corr,top30,TLH,iShares 10-20 Year Treasury Bond ETF,债券,-0.0143471,135,0.238636,96.06
+2026-10-30,mlp,mlp_64_corr,top30,IQLT,iShares MSCI Intl Quality Factor ETF,股票,-0.0145212,136,0.232955,50.41
+2026-10-30,mlp,mlp_64_corr,top30,EWL,iShares MSCI Switzerland ETF,股票,-0.0145663,137,0.227273,64.37
+2026-10-30,mlp,mlp_64_corr,top30,BKLN,Invesco Senior Loan ETF,债券,-0.0151242,138,0.221591,20.43
+2026-10-30,mlp,mlp_64_corr,top30,XRT,State Street SPDR S&P Retail ETF,股票,-0.0161689,139,0.215909,88.72
+2026-10-30,mlp,mlp_64_corr,top30,TLT,iShares 20+ Year Treasury Bond ETF,债券,-0.0166683,140,0.210227,81.84
+2026-10-30,mlp,mlp_64_corr,top30,IYT,iShares US Transportation ETF,股票,-0.01694,141,0.204545,81.61
+2026-10-30,mlp,mlp_64_corr,top30,SJNK,State Street SPDR Bloomberg Short Term High Yield Bond ETF,债券,-0.0173739,142,0.198864,24.16
+2026-10-30,mlp,mlp_64_corr,top30,ITB,iShares U.S. Home Construction ETF,股票,-0.0175782,143,0.193182,92.74
+2026-10-30,mlp,mlp_64_corr,top30,XLB,State Street Materials Select Sector SPDR ETF,股票,-0.0176691,144,0.1875,52.74
+2026-10-30,mlp,mlp_64_corr,top30,XLP,State Street Consumer Staples Select Sector SPDR ETF,股票,-0.0178425,145,0.181818,89.42
+2026-10-30,mlp,mlp_64_corr,top30,FLOT,iShares Floating Rate Bond ETF,债券,-0.018297,146,0.176136,51.01
+2026-10-30,mlp,mlp_64_corr,top30,EFG,iShares MSCI EAFE Growth ETF,股票,-0.0199391,147,0.170455,118.55
+2026-10-30,mlp,mlp_64_corr,top30,JAAA,Janus Henderson AAA CLO ETF,债券,-0.0215432,148,0.164773,50.44
+2026-10-30,mlp,mlp_64_corr,top30,EWD,iShares MSCI Sweden ETF,股票,-0.0218698,149,0.159091,52.16
+2026-10-30,mlp,mlp_64_corr,top30,UGA,United States Gasoline Fund LP,商品,-0.0218846,150,0.153409,144.6
+2026-10-30,mlp,mlp_64_corr,top30,SUB,iShares Short-Term National Muni Bond ETF,债券,-0.0286173,151,0.147727,106.06
+2026-10-30,mlp,mlp_64_corr,top30,MBB,iShares MBS ETF,债券,-0.0286869,152,0.142045,92.05
+2026-10-30,mlp,mlp_64_corr,top30,UNG,United States Natural Gas Fund LP,商品,-0.0291511,153,0.136364,9.08
+2026-10-30,mlp,mlp_64_corr,top30,UUP,Invesco DB US Dollar Index Bullish Fund,外汇,-0.0296527,154,0.130682,29
+2026-10-30,mlp,mlp_64_corr,top30,JPST,JPMorgan Ultra-Short Income ETF,债券,-0.0297825,155,0.125,50.43
+2026-10-30,mlp,mlp_64_corr,top30,LQD,iShares iBoxx $ Investment Grade Corporate Bond ETF,债券,-0.0298421,156,0.119318,104.27
+2026-10-30,mlp,mlp_64_corr,top30,SCHP,Schwab US TIPS ETF,债券,-0.0298748,157,0.113636,25.74
+2026-10-30,mlp,mlp_64_corr,top30,EMLC,VanEck J. P. Morgan EM Local Currency Bond ETF,债券,-0.0299245,158,0.107955,24.57
+2026-10-30,mlp,mlp_64_corr,top30,FXF,Invesco CurrencyShares Swiss Franc Trust,外汇,-0.0308136,159,0.102273,106.79
+2026-10-30,mlp,mlp_64_corr,top30,MINT,PIMCO Enhanced Short Maturity Active Exchange-Traded Fund,债券,-0.035443,160,0.0965909,100.74
+2026-10-30,mlp,mlp_64_corr,top30,SGOV,iShares 0-3 Month Treasury Bond ETF,债券,-0.0385437,161,0.0909091,100.735
+2026-10-30,mlp,mlp_64_corr,top30,USFR,WisdomTree Floating Rate Treasury Fund,债券,-0.0392882,162,0.0852273,50.4
+2026-10-30,mlp,mlp_64_corr,top30,VGSH,Vanguard Short-Term Treasury ETF,债券,-0.0404221,163,0.0795455,57.93
+2026-10-30,mlp,mlp_64_corr,top30,VTIP,Vanguard Short-Term Inflation-Protected Securities ETF,债券,-0.0404397,164,0.0738636,48.99
+2026-10-30,mlp,mlp_64_corr,top30,FXE,Invesco CurrencyShares Euro Trust,外汇,-0.0406578,165,0.0681818,103.11
+2026-10-30,mlp,mlp_64_corr,top30,HYG,iShares iBoxx $ High Yield Corporate Bond ETF,债券,-0.0443078,166,0.0625,77.43
+2026-10-30,mlp,mlp_64_corr,top30,EMB,iShares JP Morgan USD Emerging Markets Bond ETF,债券,-0.0461772,167,0.0568182,92.05
+2026-10-30,mlp,mlp_64_corr,top30,BIL,State Street SPDR Bloomberg 1-3 Month T-Bill ETF,债券,-0.0464207,168,0.0511364,91.7
+2026-10-30,mlp,mlp_64_corr,top30,CMBS,iShares CMBS ETF,债券,-0.0471821,169,0.0454545,47.64
+2026-10-30,mlp,mlp_64_corr,top30,VCSH,Vanguard Short-Term Corporate Bond ETF,债券,-0.0489411,170,0.0397727,77.89
+2026-10-30,mlp,mlp_64_corr,top30,AGG,iShares Core U.S. Aggregate Bond ETF,债券,-0.0510951,171,0.0340909,96.36
+2026-10-30,mlp,mlp_64_corr,top30,IEF,iShares 7-10 Year Treasury Bond ETF,债券,-0.0525786,172,0.0284091,91.76
+2026-10-30,mlp,mlp_64_corr,top30,BNDX,Vanguard Total International Bond ETF,债券,-0.0533517,173,0.0227273,47.39
+2026-10-30,mlp,mlp_64_corr,top30,IEI,iShares 3-7 Year Treasury Bond ETF,债券,-0.0618256,174,0.0170455,115.33
+2026-10-30,mlp,mlp_64_corr,top30,FXB,Invesco CurrencyShares British Pound Sterling Trust,外汇,-0.062199,175,0.0113636,128.9
+2026-10-30,mlp,mlp_64_corr,top30,FXY,Invesco Currencyshares Japanese Yen Trust,外汇,-0.0704659,176,0.00568182,58.19
+2026-10-30,xgboost,xgb_d7,all,SLV,iShares Silver Trust,商品,0.0388285,1,1,44.6
+2026-10-30,xgboost,xgb_d7,all,SIL,Global X Silver Miners ETF,股票,0.0340711,2,0.994318,71.25
+2026-10-30,xgboost,xgb_d7,all,SOXX,iShares Semiconductor ETF,股票,0.0313259,3,0.988636,471.51
+2026-10-30,xgboost,xgb_d7,all,QTUM,Defiance Quantum ETF,股票,0.0305093,4,0.982955,133.83
+2026-10-30,xgboost,xgb_d7,all,DTCR,Global X Data Center And Digital Infrastructure ETF,股票,0.0269739,5,0.977273,25.57
+2026-10-30,xgboost,xgb_d7,all,EWT,iShares MSCI Taiwan ETF,股票,0.023453,6,0.971591,101.11
+2026-10-30,xgboost,xgb_d7,all,XLK,State Street Technology Select Sector SPDR ETF,股票,0.0233249,7,0.965909,179.51
+2026-10-30,xgboost,xgb_d7,all,QQQ,Invesco QQQ Trust Series I,股票,0.0230643,8,0.960227,690.49
+2026-10-30,xgboost,xgb_d7,all,AIQ,Global X Artificial Intelligence & Technology ETF,股票,0.0213847,9,0.954545,60.14
+2026-10-30,xgboost,xgb_d7,all,EWP,iShares MSCI Spain ETF,股票,0.0208565,10,0.948864,56.33
+2026-10-30,xgboost,xgb_d7,all,PALL,abrdn Physical Palladium Shares ETF,商品,0.0208484,11,0.943182,17.78
+2026-10-30,xgboost,xgb_d7,all,EMXC,iShares MSCI Emerging Markets ex China ETF,股票,0.0206743,12,0.9375,89.7
+2026-10-30,xgboost,xgb_d7,all,IEMG,iShares Core MSCI Emerging Markets ETF,股票,0.0197613,13,0.931818,74.25
+2026-10-30,xgboost,xgb_d7,all,MTUM,iShares MSCI USA Momentum Factor ETF,股票,0.0195937,14,0.926136,284.1
+2026-10-30,xgboost,xgb_d7,all,XLE,State Street Energy Select Sector SPDR ETF,股票,0.0174154,15,0.920455,70.02
+2026-10-30,xgboost,xgb_d7,all,GLD,SPDR Gold Shares,商品,0.017382,16,0.914773,355.78
+2026-10-30,xgboost,xgb_d7,all,IHF,iShares U.S. Healthcare Providers ETF,股票,0.0173023,17,0.909091,59.94
+2026-10-30,xgboost,xgb_d7,all,COPX,Global X Copper Miners ETF,股票,0.0168833,18,0.903409,71.96
+2026-10-30,xgboost,xgb_d7,all,EIDO,iShares MSCI Indonesia ETF,股票,0.0160605,19,0.897727,9.96
+2026-10-30,xgboost,xgb_d7,all,EWJ,iShares MSCI Japan ETF,股票,0.0157952,20,0.892045,92.91
+2026-10-30,xgboost,xgb_d7,all,BLOK,Amplify Blockchain Technology ETF,股票,0.015728,21,0.886364,51.25
+2026-10-30,xgboost,xgb_d7,all,KIE,State Street SPDR S&P Insurance ETF,股票,0.0154718,22,0.880682,63.7
+2026-10-30,xgboost,xgb_d7,all,LIT,Global X Lithium & Battery Tech ETF,股票,0.0149293,23,0.875,59.81
+2026-10-30,xgboost,xgb_d7,all,MSOS,AdvisorShares Pure US Cannabis ETF,股票,0.0145275,24,0.869318,3.94
+2026-10-30,xgboost,xgb_d7,all,SPY,State Street SPDR S&P 500 ETF,股票,0.0145146,25,0.863636,755.72
+2026-10-30,xgboost,xgb_d7,all,KRE,State Street SPDR S&P Regional Banking ETF,股票,0.0144511,26,0.857955,72.01
+2026-10-30,xgboost,xgb_d7,all,VEA,Vanguard FTSE Developed Markets ETF,股票,0.0143412,27,0.852273,69.44
+2026-10-30,xgboost,xgb_d7,all,COWZ,Pacer US Cash Cows 100 ETF,股票,0.0143277,28,0.846591,71.37
+2026-10-30,xgboost,xgb_d7,all,THD,iShares MSCI Thailand ETF,股票,0.0142792,29,0.840909,68.46
+2026-10-30,xgboost,xgb_d7,all,AAXJ,iShares MSCI All Country Asia ex Japan ETF,股票,0.0142307,30,0.835227,106.17
+2026-10-30,xgboost,xgb_d7,all,ROBO,ROBO Global Robotics & Automation Index ETF,股票,0.014002,31,0.829545,74.62
+2026-10-30,xgboost,xgb_d7,all,GRID,First Trust Nasdaq Clean Edge Smart GRID Infrastructure Index,股票,0.0139668,32,0.823864,164.51
+2026-10-30,xgboost,xgb_d7,all,IHI,iShares U.S. Medical Devices ETF,股票,0.0138151,33,0.818182,54.59
+2026-10-30,xgboost,xgb_d7,all,AVDV,Avantis International Small Cap Value ETF,股票,0.0136225,34,0.8125,105.11
+2026-10-30,xgboost,xgb_d7,all,XLF,State Street Financial Select Sector SPDR ETF,股票,0.0136178,35,0.806818,56.51
+2026-10-30,xgboost,xgb_d7,all,PHO,Invesco Water Resources ETF,股票,0.0135847,36,0.801136,73.76
+2026-10-30,xgboost,xgb_d7,all,SKYY,First Trust Cloud Computing ETF,股票,0.0135723,37,0.795455,159.77
+2026-10-30,xgboost,xgb_d7,all,IDMO,Invesco S&P International Developed Momentum ETF,股票,0.0132995,38,0.789773,58.01
+2026-10-30,xgboost,xgb_d7,all,EWY,iShares MSCI South Korea ETF,股票,0.0130666,39,0.784091,152.89
+2026-10-30,xgboost,xgb_d7,all,USO,United States Oil Fund LP,商品,0.0130061,40,0.778409,168.83
+2026-10-30,xgboost,xgb_d7,all,EWC,iShares MSCI Canada ETF,股票,0.0126857,41,0.772727,60.62
+2026-10-30,xgboost,xgb_d7,all,XOP,State Street SPDR S&P Oil & Gas Exploration & Production ETF,股票,0.0123758,42,0.767045,203.76
+2026-10-30,xgboost,xgb_d7,all,IWC,iShares Micro-Cap ETF,股票,0.0123313,43,0.761364,178.18
+2026-10-30,xgboost,xgb_d7,all,EWN,iShares MSCI Netherlands ETF,股票,0.0120787,44,0.755682,64.33
+2026-10-30,xgboost,xgb_d7,all,AVUV,Avantis U.S. Small Cap Value ETF,股票,0.0120351,45,0.75,123.43
+2026-10-30,xgboost,xgb_d7,all,IWS,iShares Russell Mid-Cap Value ETF,股票,0.0120327,46,0.744318,170.07
+2026-10-30,xgboost,xgb_d7,all,EWS,iShares MSCI Singapore ETF,股票,0.0119038,47,0.738636,30.63
+2026-10-30,xgboost,xgb_d7,all,XRT,State Street SPDR S&P Retail ETF,股票,0.0118288,48,0.732955,88.72
+2026-10-30,xgboost,xgb_d7,all,ECH,iShares MSCI Chile ETF,股票,0.0117756,49,0.727273,34.73
+2026-10-30,xgboost,xgb_d7,all,RSP,Invesco S&P 500 Equal Weight ETF,股票,0.0117574,50,0.721591,218.31
+2026-10-30,xgboost,xgb_d7,all,EWW,iShares MSCI Mexico ETF,股票,0.0112834,51,0.715909,74.47
+2026-10-30,xgboost,xgb_d7,all,EIS,iShares MSCI Israel ETF,股票,0.0111712,52,0.710227,115.25
+2026-10-30,xgboost,xgb_d7,all,GDX,VanEck Gold Miners ETF,股票,0.0110921,53,0.704545,77.09
+2026-10-30,xgboost,xgb_d7,all,CPER,United States Copper Index Fund,商品,0.0109098,54,0.698864,38.99
+2026-10-30,xgboost,xgb_d7,all,CIBR,First Trust NASDAQ Cybersecurity ETF,股票,0.0108822,55,0.693182,101.03
+2026-10-30,xgboost,xgb_d7,all,IWN,iShares Russell 2000 Value ETF,股票,0.0108361,56,0.6875,214.58
+2026-10-30,xgboost,xgb_d7,all,PPLT,abrdn Physical Platinum Shares ETF,商品,0.0108074,57,0.681818,13.01
+2026-10-30,xgboost,xgb_d7,all,XLV,State Street Health Care Select Sector SPDR ETF,股票,0.0107869,58,0.676136,184.87
+2026-10-30,xgboost,xgb_d7,all,IWP,iShares Russell Mid-Cap Growth ETF,股票,0.0107406,59,0.670455,131.64
+2026-10-30,xgboost,xgb_d7,all,PPH,VanEck Pharmaceutical ETF,股票,0.0107286,60,0.664773,119.33
+2026-10-30,xgboost,xgb_d7,all,XME,State Street SPDR S&P Metals & Mining ETF,股票,0.0105013,61,0.659091,97.82
+2026-10-30,xgboost,xgb_d7,all,OIH,VanEck Oil Services ETF,股票,0.0104294,62,0.653409,411.57
+2026-10-30,xgboost,xgb_d7,all,EDV,Vanguard Extended Duration Treasury ETF,债券,0.0103115,63,0.647727,59.27
+2026-10-30,xgboost,xgb_d7,all,PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF,商品,0.0101914,64,0.642045,20.02
+2026-10-30,xgboost,xgb_d7,all,ARGT,Global X MSCI Argentina ETF,股票,0.00997834,65,0.636364,79.18
+2026-10-30,xgboost,xgb_d7,all,MOAT,VanEck Morningstar Wide Moat ETF,股票,0.00919051,66,0.630682,112.38
+2026-10-30,xgboost,xgb_d7,all,IWM,iShares Russell 2000 ETF,股票,0.0088857,67,0.625,279.33
+2026-10-30,xgboost,xgb_d7,all,EWA,iShares MSCI Australia ETF,股票,0.00873336,68,0.619318,29.54
+2026-10-30,xgboost,xgb_d7,all,FDN,First Trust Dow Jones Internet Index Fund,股票,0.00864498,69,0.613636,266.23
+2026-10-30,xgboost,xgb_d7,all,MOO,VanEck Agribusiness ETF,股票,0.0085512,70,0.607955,81.98
+2026-10-30,xgboost,xgb_d7,all,VIG,Vanguard Dividend Appreciation ETF,股票,0.00853326,71,0.602273,247.76
+2026-10-30,xgboost,xgb_d7,all,SCZ,iShares MSCI EAFE Small-Cap ETF,股票,0.00851255,72,0.596591,82.75
+2026-10-30,xgboost,xgb_d7,all,SCHD,Schwab US Dividend Equity ETF,股票,0.0084827,73,0.590909,35.78
+2026-10-30,xgboost,xgb_d7,all,XLI,State Street Industrial Select Sector SPDR ETF,股票,0.00825787,74,0.585227,167.4
+2026-10-30,xgboost,xgb_d7,all,XBI,State Street SPDR S&P Biotech ETF,股票,0.00789774,75,0.579545,155.98
+2026-10-30,xgboost,xgb_d7,all,EWH,iShares MSCI Hong Kong ETF,股票,0.00784966,76,0.573864,22.52
+2026-10-30,xgboost,xgb_d7,all,ICVT,iShares Convertible Bond ETF,债券,0.00783869,77,0.568182,105.17
+2026-10-30,xgboost,xgb_d7,all,FNDC,Schwab Fundamental International Small Equity ETF,股票,0.00776303,78,0.5625,48.94
+2026-10-30,xgboost,xgb_d7,all,VNQ,Vanguard Real Estate ETF,房地产,0.00762178,79,0.556818,93.94
+2026-10-30,xgboost,xgb_d7,all,BOTZ,Global X Robotics & Artificial Intelligence ETF,股票,0.00746586,80,0.551136,32.22
+2026-10-30,xgboost,xgb_d7,all,KWEB,KraneShares CSI China Internet ETF,股票,0.00746426,81,0.545455,22.74
+2026-10-30,xgboost,xgb_d7,all,IYT,iShares US Transportation ETF,股票,0.00725238,82,0.539773,81.61
+2026-10-30,xgboost,xgb_d7,all,VNM,VanEck Vietnam ETF,股票,0.00720736,83,0.534091,16.645
+2026-10-30,xgboost,xgb_d7,all,XLB,State Street Materials Select Sector SPDR ETF,股票,0.00696944,84,0.528409,52.74
+2026-10-30,xgboost,xgb_d7,all,URA,Global X Uranium ETF,股票,0.00691359,85,0.522727,33.73
+2026-10-30,xgboost,xgb_d7,all,ICLN,iShares Global Clean Energy ETF,股票,0.00668429,86,0.517045,15.31
+2026-10-30,xgboost,xgb_d7,all,PAVE,Global X U.S. Infrastructure Development ETF,股票,0.00654053,87,0.511364,53.52
+2026-10-30,xgboost,xgb_d7,all,TUR,iShares MSCI Turkey ETF,股票,0.00647227,88,0.505682,29.53
+2026-10-30,xgboost,xgb_d7,all,VNQI,Vanguard Global ex-U.S. Real Estate ETF,房地产,0.00645357,89,0.5,42.7
+2026-10-30,xgboost,xgb_d7,all,EFV,iShares MSCI EAFE Value ETF,股票,0.0064149,90,0.494318,79.26
+2026-10-30,xgboost,xgb_d7,all,VYMI,Vanguard International High Dividend Yield ETF,股票,0.00635736,91,0.488636,101.4
+2026-10-30,xgboost,xgb_d7,all,VCLT,Vanguard Long-Term Corporate Bond ETF,债券,0.00616389,92,0.482955,70.63
+2026-10-30,xgboost,xgb_d7,all,KCE,State Street SPDR S&P Capital Markets ETF,股票,0.00610215,93,0.477273,154.33
+2026-10-30,xgboost,xgb_d7,all,TLT,iShares 20+ Year Treasury Bond ETF,债券,0.00550058,94,0.471591,81.84
+2026-10-30,xgboost,xgb_d7,all,VGK,Vanguard FTSE Europe ETF,股票,0.00543813,95,0.465909,87.54
+2026-10-30,xgboost,xgb_d7,all,BOAT,SonicShares Global Shipping ETF,股票,0.00493557,96,0.460227,53.13
+2026-10-30,xgboost,xgb_d7,all,EWL,iShares MSCI Switzerland ETF,股票,0.00478618,97,0.454545,64.37
+2026-10-30,xgboost,xgb_d7,all,TAN,Invesco Solar ETF,股票,0.00473195,98,0.448864,40.2
+2026-10-30,xgboost,xgb_d7,all,EFG,iShares MSCI EAFE Growth ETF,股票,0.00454229,99,0.443182,118.55
+2026-10-30,xgboost,xgb_d7,all,DBA,Invesco DB Agriculture Fund,商品,0.004512,100,0.4375,26.89
+2026-10-30,xgboost,xgb_d7,all,EZA,iShares MSCI South Africa ETF,股票,0.00410489,101,0.431818,61.78
+2026-10-30,xgboost,xgb_d7,all,XLY,State Street Consumer Discretionary Select Sector SPDR ETF,股票,0.00403903,102,0.426136,115.38
+2026-10-30,xgboost,xgb_d7,all,IWO,iShares Russell 2000 Growth ETF,股票,0.00402939,103,0.420455,351.75
+2026-10-30,xgboost,xgb_d7,all,ASHR,Xtrackers Harvest CSI 300 China A-Shares ETF,股票,0.00391528,104,0.414773,30.04
+2026-10-30,xgboost,xgb_d7,all,KSA,iShares MSCI Saudi Arabia ETF,股票,0.00362269,105,0.409091,34.22
+2026-10-30,xgboost,xgb_d7,all,EWD,iShares MSCI Sweden ETF,股票,0.00360566,106,0.403409,52.16
+2026-10-30,xgboost,xgb_d7,all,EWI,iShares MSCI Italy ETF,股票,0.00343703,107,0.397727,55.87
+2026-10-30,xgboost,xgb_d7,all,XLU,State Street Utilities Select Sector SPDR ETF,股票,0.0031406,108,0.392045,43.43
+2026-10-30,xgboost,xgb_d7,all,XLP,State Street Consumer Staples Select Sector SPDR ETF,股票,0.002828,109,0.386364,89.42
+2026-10-30,xgboost,xgb_d7,all,EPOL,iShares MSCI Poland ETF,股票,0.00271386,110,0.380682,43.4
+2026-10-30,xgboost,xgb_d7,all,ARKK,ARK Innovation ETF,股票,0.00268862,111,0.375,80.75
+2026-10-30,xgboost,xgb_d7,all,ITA,iShares U.S. Aerospace & Defense ETF,股票,0.00215319,112,0.369318,209.74
+2026-10-30,xgboost,xgb_d7,all,REMX,VanEck Rare Earth and Strategic Metals ETF,股票,0.00192224,113,0.363636,49.99
+2026-10-30,xgboost,xgb_d7,all,XLC,State Street Communication Services Select Sector SPDR ETF,股票,0.00158158,114,0.357955,99.9
+2026-10-30,xgboost,xgb_d7,all,ILF,iShares Latin America 40 ETF,股票,0.00137299,115,0.352273,32.13
+2026-10-30,xgboost,xgb_d7,all,UFO,Procure Space ETF,股票,0.00104595,116,0.346591,40.24
+2026-10-30,xgboost,xgb_d7,all,IJH,iShares Core S&P Mid-Cap ETF,股票,0.000917885,117,0.340909,73.33
+2026-10-30,xgboost,xgb_d7,all,EWU,iShares MSCI United Kingdom ETF,股票,0.000854647,118,0.335227,47.83
+2026-10-30,xgboost,xgb_d7,all,MUB,iShares National Muni Bond ETF,债券,0.000786101,119,0.329545,104.18
+2026-10-30,xgboost,xgb_d7,all,EWG,iShares MSCI Germany ETF,股票,0.000562529,120,0.323864,41.88
+2026-10-30,xgboost,xgb_d7,all,PFF,iShares Preferred & Income Securities ETF,债券,0.000521872,121,0.318182,28.47
+2026-10-30,xgboost,xgb_d7,all,IGV,iShares Expanded Tech-Software Sector ETF,股票,0.000516012,122,0.3125,104.29
+2026-10-30,xgboost,xgb_d7,all,EWM,iShares MSCI Malaysia ETF,股票,9.27907e-05,123,0.306818,26.87
+2026-10-30,xgboost,xgb_d7,all,JETS,U.S. Global Jets ETF,股票,-0.000127231,124,0.301136,26.93
+2026-10-30,xgboost,xgb_d7,all,HYD,VanEck High Yield Muni ETF,债券,-0.000293443,125,0.295455,49.64
+2026-10-30,xgboost,xgb_d7,all,EWQ,iShares MSCI France ETF,股票,-0.000865881,126,0.289773,42.24
+2026-10-30,xgboost,xgb_d7,all,MCHI,iShares MSCI China ETF,股票,-0.00135119,127,0.284091,49.07
+2026-10-30,xgboost,xgb_d7,all,NLR,VanEck Uranium and Nuclear ETF,股票,-0.00141391,128,0.278409,91.75
+2026-10-30,xgboost,xgb_d7,all,ETHA,iShares Ethereum Trust ETF,数字资产,-0.00152258,129,0.272727,50.42
+2026-10-30,xgboost,xgb_d7,all,ITB,iShares U.S. Home Construction ETF,股票,-0.00155659,130,0.267045,92.74
+2026-10-30,xgboost,xgb_d7,all,AMLP,Alerian MLP ETF,股票,-0.0020858,131,0.261364,54.06
+2026-10-30,xgboost,xgb_d7,all,VTV,Vanguard Morningstar Value ETF,股票,-0.00262222,132,0.255682,228.02
+2026-10-30,xgboost,xgb_d7,all,IQLT,iShares MSCI Intl Quality Factor ETF,股票,-0.00278142,133,0.25,50.41
+2026-10-30,xgboost,xgb_d7,all,IGF,iShares Global Infrastructure ETF,股票,-0.00371254,134,0.244318,65.8
+2026-10-30,xgboost,xgb_d7,all,SJNK,State Street SPDR Bloomberg Short Term High Yield Bond ETF,债券,-0.00390136,135,0.238636,24.16
+2026-10-30,xgboost,xgb_d7,all,EFAV,iShares MSCI EAFE Min Vol Factor ETF,股票,-0.00457678,136,0.232955,96.25
+2026-10-30,xgboost,xgb_d7,all,TLH,iShares 10-20 Year Treasury Bond ETF,债券,-0.00510162,137,0.227273,96.06
+2026-10-30,xgboost,xgb_d7,all,INDA,iShares MSCI India ETF,股票,-0.00551325,138,0.221591,47.72
+2026-10-30,xgboost,xgb_d7,all,BITO,ProShares Bitcoin ETF,数字资产,-0.00614816,139,0.215909,10.23
+2026-10-30,xgboost,xgb_d7,all,ARKG,ARK Genomic Revolution ETF,股票,-0.00671308,140,0.210227,51.4
+2026-10-30,xgboost,xgb_d7,all,USMV,iShares MSCI USA Min Vol Factor ETF,股票,-0.00749843,141,0.204545,102.93
+2026-10-30,xgboost,xgb_d7,all,CRAK,VanEck Oil Refiners ETF,股票,-0.00802149,142,0.198864,62.16
+2026-10-30,xgboost,xgb_d7,all,IBIT,iShares Bitcoin Trust ETF,数字资产,-0.00860216,143,0.193182,43.36
+2026-10-30,xgboost,xgb_d7,all,FXF,Invesco CurrencyShares Swiss Franc Trust,外汇,-0.0100546,144,0.1875,106.79
+2026-10-30,xgboost,xgb_d7,all,EWZ,iShares MSCI Brazil ETF,股票,-0.0106494,145,0.181818,32.46
+2026-10-30,xgboost,xgb_d7,all,EMLC,VanEck J. P. Morgan EM Local Currency Bond ETF,债券,-0.0116443,146,0.176136,24.57
+2026-10-30,xgboost,xgb_d7,all,QUAL,iShares MSCI USA Quality Factor ETF,股票,-0.0122555,147,0.170455,222.49
+2026-10-30,xgboost,xgb_d7,all,IEF,iShares 7-10 Year Treasury Bond ETF,债券,-0.0158203,148,0.164773,91.76
+2026-10-30,xgboost,xgb_d7,all,BNDX,Vanguard Total International Bond ETF,债券,-0.0161574,149,0.159091,47.39
+2026-10-30,xgboost,xgb_d7,all,EMB,iShares JP Morgan USD Emerging Markets Bond ETF,债券,-0.0166828,150,0.153409,92.05
+2026-10-30,xgboost,xgb_d7,all,FXE,Invesco CurrencyShares Euro Trust,外汇,-0.0173044,151,0.147727,103.11
+2026-10-30,xgboost,xgb_d7,all,LQD,iShares iBoxx $ Investment Grade Corporate Bond ETF,债券,-0.0187733,152,0.142045,104.27
+2026-10-30,xgboost,xgb_d7,all,MBB,iShares MBS ETF,债券,-0.0188261,153,0.136364,92.05
+2026-10-30,xgboost,xgb_d7,all,SCHP,Schwab US TIPS ETF,债券,-0.0191262,154,0.130682,25.74
+2026-10-30,xgboost,xgb_d7,all,BKLN,Invesco Senior Loan ETF,债券,-0.0197882,155,0.125,20.43
+2026-10-30,xgboost,xgb_d7,all,BSOL,Bitwise Solana Staking ETF,数字资产,-0.0201102,156,0.119318,13.05
+2026-10-30,xgboost,xgb_d7,all,IEI,iShares 3-7 Year Treasury Bond ETF,债券,-0.0234379,157,0.113636,115.33
+2026-10-30,xgboost,xgb_d7,all,SUB,iShares Short-Term National Muni Bond ETF,债券,-0.0240116,158,0.107955,106.06
+2026-10-30,xgboost,xgb_d7,all,HYG,iShares iBoxx $ High Yield Corporate Bond ETF,债券,-0.024094,159,0.102273,77.43
+2026-10-30,xgboost,xgb_d7,all,UGA,United States Gasoline Fund LP,商品,-0.0252743,160,0.0965909,144.6
+2026-10-30,xgboost,xgb_d7,all,FXY,Invesco Currencyshares Japanese Yen Trust,外汇,-0.0258685,161,0.0909091,58.19
+2026-10-30,xgboost,xgb_d7,all,VCSH,Vanguard Short-Term Corporate Bond ETF,债券,-0.0265266,162,0.0852273,77.89
+2026-10-30,xgboost,xgb_d7,all,UNG,United States Natural Gas Fund LP,商品,-0.0277179,163,0.0795455,9.08
+2026-10-30,xgboost,xgb_d7,all,FXB,Invesco CurrencyShares British Pound Sterling Trust,外汇,-0.0281017,164,0.0738636,128.9
+2026-10-30,xgboost,xgb_d7,all,CMBS,iShares CMBS ETF,债券,-0.0289296,165,0.0681818,47.64
+2026-10-30,xgboost,xgb_d7,all,VTIP,Vanguard Short-Term Inflation-Protected Securities ETF,债券,-0.0307146,166,0.0625,48.99
+2026-10-30,xgboost,xgb_d7,all,AGG,iShares Core U.S. Aggregate Bond ETF,债券,-0.0349031,167,0.0568182,96.36
+2026-10-30,xgboost,xgb_d7,all,UUP,Invesco DB US Dollar Index Bullish Fund,外汇,-0.0349912,168,0.0511364,29
+2026-10-30,xgboost,xgb_d7,all,VGSH,Vanguard Short-Term Treasury ETF,债券,-0.037952,169,0.0454545,57.93
+2026-10-30,xgboost,xgb_d7,all,SGOV,iShares 0-3 Month Treasury Bond ETF,债券,-0.039563,170,0.0397727,100.735
+2026-10-30,xgboost,xgb_d7,all,BIL,State Street SPDR Bloomberg 1-3 Month T-Bill ETF,债券,-0.0407363,171,0.0340909,91.7
+2026-10-30,xgboost,xgb_d7,all,JAAA,Janus Henderson AAA CLO ETF,债券,-0.0416914,172,0.0284091,50.44
+2026-10-30,xgboost,xgb_d7,all,JPST,JPMorgan Ultra-Short Income ETF,债券,-0.0432066,173,0.0227273,50.43
+2026-10-30,xgboost,xgb_d7,all,FLOT,iShares Floating Rate Bond ETF,债券,-0.043698,174,0.0170455,51.01
+2026-10-30,xgboost,xgb_d7,all,MINT,PIMCO Enhanced Short Maturity Active Exchange-Traded Fund,债券,-0.0466446,175,0.0113636,100.74
+2026-10-30,xgboost,xgb_d7,all,USFR,WisdomTree Floating Rate Treasury Fund,债券,-0.0473067,176,0.00568182,50.4
